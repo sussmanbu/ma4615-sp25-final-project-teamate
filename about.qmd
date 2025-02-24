@@ -8,16 +8,24 @@ about:
 
 This comes from the file `about.qmd`.
 
-This is a website for the final project for MA[46]15 Data Science with R by Team TEAMNAME.
+This is a website for the final project for MA[46]15 Data Science with R by Team TEAMATE.
+
 The members of this team are below.
+
+
+## Rheona Mehta
+Rheona is a junior studying Economics and Data Science. Github:  https://github.com/rhemehta
 
 ## Zifan Huang
 Zifan is a senior studying economics. Github: https://github.com/zifan33
 
 ## Catherine Liu
-
 Catherine is a junior studying computer science and mathematics. Github: https://github.com/catherinel04
 
+## Aron Diamond 
+Aron is a masters student studying Bioinformatics. Github: https://github.com/adiama0
+
+## Xiangfu Meng
 
 <!-- Please leave in the information below -->
 
