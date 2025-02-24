@@ -1,0 +1,25 @@
+---
+title: "Blog 1: Data Progress"
+description:  |
+  Description of datasets found.
+author: "TEAMATE"
+date: "2025-02-24"
+draft: FALSE
+---
+
+
+**Data #1:**
+URL: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HLO4XC
+
+The data comes from Kline, Patrick, Evan K. Rose, and Christopher
+R. Walters, "Systemic Discrimination Among Large U.S. Employers,"
+The Quarterly Journal of Economics, vol. 137 no. 4, (2022),
+1963-2036.https://doi.org/10.1093/qje/qjac024. This dataset, published
+alongside the article by Kline, Rose, and Walters (2022), examines potential
+systemic hiring discrimination by large U.S. employers. The data primarily
+cover hiring outcomes, employer characteristics, and applicant demographic
+details spanning several years. Data is originally collected by authors. They
+conducted a randomized control trail (RCT) to identify patterns of potential
+discrimination, estimating the magnitude of these effects, and understanding
+whether certain employer or regional characteristics are associated with
+differential outcomes.
