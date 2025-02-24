@@ -95,7 +95,14 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "This comes from the file about.qmd.\nThis is a website for the final project for MA[46]15 Data Science with R by Team TEAMNAME. The members of this team are below."
+    "text": "This comes from the file about.qmd.\nThis is a website for the final project for MA[46]15 Data Science with R by Team TEAMATE.\nThe members of this team are below."
+  },
+  {
+    "objectID": "about.html#rheona-mehta",
+    "href": "about.html#rheona-mehta",
+    "title": "About",
+    "section": "Rheona Mehta",
+    "text": "Rheona Mehta\nRheona is a junior studying Economics and Data Science. Github: https://github.com/rhemehta"
   },
   {
     "objectID": "about.html#zifan-huang",
@@ -109,7 +116,21 @@
     "href": "about.html#catherine-liu",
     "title": "About",
     "section": "Catherine Liu",
-    "text": "Catherine Liu\nCatherine is a junior studying computer science and mathematics. Github: https://github.com/catherinel04\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
+    "text": "Catherine Liu\nCatherine is a junior studying computer science and mathematics. Github: https://github.com/catherinel04"
+  },
+  {
+    "objectID": "about.html#aron-diamond",
+    "href": "about.html#aron-diamond",
+    "title": "About",
+    "section": "Aron Diamond",
+    "text": "Aron Diamond\nAron is a masters student studying Bioinformatics. Github: https://github.com/adiama0"
+  },
+  {
+    "objectID": "about.html#xiangfu-meng",
+    "href": "about.html#xiangfu-meng",
+    "title": "About",
+    "section": "Xiangfu Meng",
+    "text": "Xiangfu Meng\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
   },
   {
     "objectID": "big_picture.html",
