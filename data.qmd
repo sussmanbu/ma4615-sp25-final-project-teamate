@@ -55,6 +55,47 @@ Note that you don't need to run this script from every post/page.
 Instead, you can load in the results of this script, which will usually be `.rds` files. In your data page you'll describe how these results were created. If you have a very large data set, you might save smaller data sets that you can use for exploration purposes.
 To link to this file, you can use `[cleaning script](/scripts/clean_data.R)` wich appears as [cleaning script](/scripts/clean_data.R). 
 
+```{r clean data plots}
+source("scripts/load_and_clean_data.R")
+data <- readRDS("dataset/cleaned_data.rds")
+
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+# Diagnostic Plots
+
+# Check for outliers in age_at_sub
+boxplot(data$age_at_sub, main = "Age at Submission")
+
+# Check distribution of submissions throughout years
+ggplot(data, aes(x = month)) +
+  geom_histogram(binwidth = 0.5, fill = "skyblue", color = "black") +  
+  scale_x_continuous(
+    breaks = 1:12,
+    labels = month.abb
+  ) +
+  labs(
+    title = "Distribution of Months",
+    x = "Month",
+    y = "Count"
+  ) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  facet_grid(~year)
+
+# Check distribution of submissions by state
+data %>%
+  count(state) %>%
+  arrange(desc(n))  %>% 
+  ggplot(aes(y = reorder(state, n), x = n)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of States (Ordered by Count)",
+    y = "State",
+    x = "Count"
+  ) 
+```
+
 ----
 
 ## Rubric: On this page
