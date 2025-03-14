@@ -88,7 +88,7 @@
     "href": "posts/2025-03-24-blog-3/blog-3.html",
     "title": "Blog 3: Extended Analysis and Equity Considerations",
     "section": "",
-    "text": "rm(list = ls())\n# hide warnings\nrm(list = ls())\noptions(warn = -1)\nsuppressPackageStartupMessages(library(ggplot2))\nsuppressPackageStartupMessages(library(tidyverse))\nsuppressPackageStartupMessages(library(dplyr))\nsuppressPackageStartupMessages(library(stargazer))\ndata &lt;- readRDS(\"dataset/cleaned_data.rds\")"
+    "text": "rm(list = ls())\n# hide warnings\noptions(warn = -1)\nsuppressPackageStartupMessages(library(ggplot2))\nsuppressPackageStartupMessages(library(tidyverse))\nsuppressPackageStartupMessages(library(dplyr))\nsuppressPackageStartupMessages(library(stargazer))\ndata &lt;- readRDS(\"dataset/cleaned_data.rds\")"
   },
   {
     "objectID": "posts/2025-03-24-blog-3/blog-3.html#data-background-and-context",
