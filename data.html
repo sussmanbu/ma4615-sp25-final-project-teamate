@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -121,13 +155,25 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-makes-a-good-data-set" id="toc-what-makes-a-good-data-set" class="nav-link active" data-scroll-target="#what-makes-a-good-data-set">What makes a good data set?</a></li>
+  <li><a href="#data-sources-and-rationale" id="toc-data-sources-and-rationale" class="nav-link active" data-scroll-target="#data-sources-and-rationale">Data Sources and Rationale</a></li>
+  <li><a href="#data-files-and-variables" id="toc-data-files-and-variables" class="nav-link" data-scroll-target="#data-files-and-variables">Data Files and Variables</a></li>
+  <li><a href="#data-cleaning-process" id="toc-data-cleaning-process" class="nav-link" data-scroll-target="#data-cleaning-process">Data Cleaning Process</a></li>
+  <li><a href="#diagnostic-plots" id="toc-diagnostic-plots" class="nav-link" data-scroll-target="#diagnostic-plots">Diagnostic Plots</a>
+  <ul class="collapse">
+  <li><a href="#importing-the-cleaned-data" id="toc-importing-the-cleaned-data" class="nav-link" data-scroll-target="#importing-the-cleaned-data">Importing the Cleaned Data</a></li>
+  </ul></li>
+  <li><a href="#check-for-outliers-in-age_at_sub" id="toc-check-for-outliers-in-age_at_sub" class="nav-link" data-scroll-target="#check-for-outliers-in-age_at_sub">Check for outliers in age_at_sub</a></li>
+  <li><a href="#check-distribution-of-submissions-throughout-years" id="toc-check-distribution-of-submissions-throughout-years" class="nav-link" data-scroll-target="#check-distribution-of-submissions-throughout-years">Check distribution of submissions throughout years</a></li>
+  <li><a href="#distribution-of-submissions-by-state" id="toc-distribution-of-submissions-by-state" class="nav-link" data-scroll-target="#distribution-of-submissions-by-state">Distribution of Submissions by State</a>
+  <ul class="collapse">
+  <li><a href="#what-makes-a-good-data-set" id="toc-what-makes-a-good-data-set" class="nav-link" data-scroll-target="#what-makes-a-good-data-set">What makes a good data set?</a></li>
   <li><a href="#where-to-keep-data" id="toc-where-to-keep-data" class="nav-link" data-scroll-target="#where-to-keep-data">Where to keep data?</a>
   <ul class="collapse">
   <li><a href="#sharing-your-data" id="toc-sharing-your-data" class="nav-link" data-scroll-target="#sharing-your-data">Sharing your data</a></li>
   <li><a href="#clean-data-script" id="toc-clean-data-script" class="nav-link" data-scroll-target="#clean-data-script">Clean data script</a></li>
   </ul></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -159,7 +205,116 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><img src="images/data-import-cheatsheet-thumbs.png" class="img-fluid"></p>
-<p>This comes from the file <code>data.qmd</code>.</p>
+<p>This page details our data sources, the cleaning process, and provides initial diagnostic plots. For this project, we work with data from the landmark study <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HLO4XC"><em>Systemic Discrimination Among Large U.S. Employers</em></a> (Kline, Rose, and Walters, 2022). The data was originally collected to investigate patterns of hiring discrimination using a correspondence experiment, making it highly relevant to both current social justice issues and policy enforcement efforts.</p>
+<section id="data-sources-and-rationale" class="level2">
+<h2 class="anchored" data-anchor-id="data-sources-and-rationale">Data Sources and Rationale</h2>
+<ul>
+<li><strong>Source:</strong> The dataset is available on Harvard Dataverse and was published alongside the study <em>“Systemic Discrimination Among Large U.S. Employers”</em>.<br>
+<a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HLO4XC">Link to original data source</a></li>
+<li><strong>Purpose:</strong> The data were collected to examine whether hiring discrimination is endemic to particular firms and to quantify the impact of factors such as race, gender, and age on callback rates.</li>
+<li><strong>Why this Data:</strong> We selected this dataset because it not only addresses pressing issues of discrimination and equity but also includes rich information (e.g., date, location, and applicant demographics) that supports extensive exploratory and inferential analysis.</li>
+</ul>
+</section>
+<section id="data-files-and-variables" class="level2">
+<h2 class="anchored" data-anchor-id="data-files-and-variables">Data Files and Variables</h2>
+<p>The project focuses on a single dataset that was processed and saved as an RDS file (<code>cleaned_data.rds</code>). Some Key variables include: - <strong><code>age_at_sub</code></strong>: Age of the applicant at the time of submission. - <strong><code>month</code> and <code>year</code></strong>: Date components of when applications were submitted. - <strong><code>state</code></strong>: Geographic information about the submission. - <strong><code>race</code></strong>: Race of the applicant. - <strong><code>cb</code></strong>: Binary indicator for whether an applicant received a callback (1 = Yes, 0 = No). - etc…</p>
+<p>For a detailed account of variable definitions and transformations, please refer to our <a href="./scripts/clean_data.R">cleaning script</a>.</p>
+</section>
+<section id="data-cleaning-process" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning-process">Data Cleaning Process</h2>
+<p>The raw data was imported, cleaned, and transformed using R. The cleaning process involved: - Renaming variables and recoding factors for clarity. - Removing duplicate and inconsistent entries. - Aggregating multiple data files (if applicable) to produce the final cleaned dataset. - Saving the cleaned dataset as an RDS file for efficient reloading in analyses.</p>
+</section>
+<section id="diagnostic-plots" class="level2">
+<h2 class="anchored" data-anchor-id="diagnostic-plots">Diagnostic Plots</h2>
+<p>Below are some initial diagnostic plots generated from the cleaned dataset.</p>
+<section id="importing-the-cleaned-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-the-cleaned-data">Importing the Cleaned Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lubridate' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ lubridate 1.9.4     ✔ tibble    3.2.1
+✔ purrr     1.0.2     ✔ tidyr     1.3.1
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the cleaned data</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/cleaned_data.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="check-for-outliers-in-age_at_sub" class="level1">
+<h1>Check for outliers in age_at_sub</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(data<span class="sc">$</span>age_at_sub, <span class="at">main =</span> <span class="st">"Age at Submission"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="check-distribution-of-submissions-throughout-years" class="level1">
+<h1>Check distribution of submissions throughout years</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> month)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.5</span>, <span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> month.abb</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of Months"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>)) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span>year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="distribution-of-submissions-by-state" class="level1">
+<h1>Distribution of Submissions by State</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">reorder</span>(state, n), <span class="at">x =</span> n)) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of States (Ordered by Count)"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"State"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Count"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+<p>This comes from the original file <code>data.qmd</code>.</p>
 <p>Your first steps in this project will be to find data to work on.</p>
 <p>I recommend trying to find data that interests you and that you are knowledgeable about. A bad example would be if you have no interest in video games but your data set is about video games. I also recommend finding data that is related to current events, social justice, and other areas that have an impact.</p>
 <p>Initially, you will study <em>one dataset</em> but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable. Data from the census, weather data, economic data, are all relatively easy to combine with other data with time/location components.</p>
@@ -187,7 +342,6 @@ ul.task-list li input[type="checkbox"] {
 <section id="clean-data-script" class="level3">
 <h3 class="anchored" data-anchor-id="clean-data-script">Clean data script</h3>
 <p>The idea behind this file is that someone coming to your website could largely replicate your analyses after running this script on the original data sets to clean them. This file might create a derivative data set that you then use for your subsequent analysis. Note that you don’t need to run this script from every post/page. Instead, you can load in the results of this script, which will usually be <code>.rds</code> files. In your data page you’ll describe how these results were created. If you have a very large data set, you might save smaller data sets that you can use for exploration purposes. To link to this file, you can use <code>[cleaning script](/scripts/clean_data.R)</code> wich appears as <a href="./scripts/clean_data.R">cleaning script</a>.</p>
-<hr>
 </section>
 </section>
 <section id="rubric-on-this-page" class="level2">
@@ -220,6 +374,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
