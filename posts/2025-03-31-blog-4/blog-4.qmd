@@ -1,0 +1,306 @@
+---
+title: "Blog 4: Extended Statistical Modeling"
+description:  |
+  Description of datasets found.
+author: "TEAMATE"
+date: "2025-03-31"
+draft: FALSE
+---
+
+Note: Experiment data is from 2019-2021, while census data is from 2019-2024.
+The following code aggregate application level data to the state level and merge it with the census data to calculate the proportion of applications by state. The analysis aims to provide insights into the distribution of applications across states and how it relates to the population size.
+
+```{r}
+rm(list = ls())
+# hide warnings
+options(warn = -1)
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(readxl))
+suppressPackageStartupMessages(library(fixest))
+
+data <- readRDS("dataset/cleaned_data.rds")
+census_data <- read_excel('dataset/NST-EST2024-POP.xlsx')
+census_data_2 <- read_excel('dataset/nst-est2019-01.xlsx', skip = 3)
+
+# for census_data_2 only keep year column 13 and row 6 onwards
+census_data_2 <- census_data_2 %>%
+  select(1, 13) %>%
+  slice(6:56) 
+
+# rename first column to states 
+colnames(census_data_2)[1] <- "states"
+
+# delete . in front of state names
+census_data_2 <- census_data_2 %>% 
+  filter(grepl("^\\.", states)) %>%
+  mutate(states = gsub("^\\.", "", states))
+```
+
+
+## Data Background and Context
+The dataset originates from the landmark study *"Systemic Discrimination Among Large U.S. Employers"* (Kline, Rose, and Walters, 2022). 
+
+- **Research Questions:** The study explores whether discrimination is endemic to particular firms, investigates firm-level heterogeneity in callback rates, and considers the potential impact of industry, geographic location, and other structural factors.
+
+The census data was retrieved from the United States Census Bureau at this link: https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html
+
+
+## Check distribution of submissions by state
+The following code creates a bar plot that orders states by the count of submissions. This visualization helps identify geographic patterns in the data, which may be related to regional hiring practices or other local factors.
+```{r}
+data %>%
+  count(state) %>%
+  arrange(desc(n)) %>% 
+  ggplot(aes(y = reorder(state, n), x = n)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of States (Ordered by Count)",
+    y = "State",
+    x = "Count"
+  )
+```
+
+# aggregate experiment data by state, year, and race
+```{r}
+data$full_name <- paste(data$firstname, data$lastname)
+data$name_length <- nchar(data$full_name)
+state_data <- data %>%
+  group_by(state, year) %>%
+  summarise(
+    num_sub = n(),
+    callback_rate = mean(cb),
+    age = mean(age_at_sub),
+    name_length = mean(name_length),
+    proportion_black_name = sum(black == 1) / num_sub
+  ) %>%
+  ungroup()
+unique(state_data$state)
+```
+
+# clean census data - continued
+
+```{r}
+colnames(census_data)[1] <- "states"
+
+census_data <- census_data %>% 
+  select(-2) %>% 
+  slice(-(1:3))
+
+colnames(census_data)[2:6] <- c("2020", "2021", "2022", "2023", "2024")
+
+census_data <- census_data %>% filter(grepl("^\\.", states))
+
+census_data <- census_data %>% 
+  filter(states != ".Puerto Rico") %>%
+  mutate(states = gsub("^\\.", "", states)) 
+
+# add census_data_2 to census_data 
+census_data <- census_data %>%
+  left_join(census_data_2, by = "states") 
+```
+
+# Clean Population Data to Longitudinal Format
+```{r}
+# create a state abbr column for merging
+census_data$state_abbr <- toupper(substr(census_data$states, 1, 2))
+
+# reshape the data into state-year panel
+census_data_long <- census_data %>%
+  pivot_longer(
+    cols = -c(states, state_abbr),
+    names_to = "year",
+    values_to = "population",
+    values_transform = list(population = as.numeric)
+  ) %>%
+  mutate(year = as.numeric(year))
+
+# check unique state_abbr
+unique(census_data$states)
+
+
+```
+
+```{r}
+unique(state_data$year)
+```
+
+
+```{r}
+unique(census_data_long$year)
+```
+
+```{r}
+state_mapping <- tibble::tribble(
+  ~states,                     ~state_abbr_exp,
+  "Alabama",                   "AL",
+  "Alaska",                    "AK",
+  "Arizona",                   "AZ",
+  "Arkansas",                  "AR",
+  "California",                "CA",
+  "Colorado",                  "CO",
+  "Connecticut",               "CT",
+  "Delaware",                  "DE",
+  "District of Columbia",      "DC",
+  "Florida",                   "FL",
+  "Georgia",                   "GA",
+  "Hawaii",                    "HI",
+  "Idaho",                     "ID",
+  "Illinois",                  "IL",
+  "Indiana",                   "IN",
+  "Iowa",                      "IA",
+  "Kansas",                    "KS",
+  "Kentucky",                  "KY",
+  "Louisiana",                 "LA",
+  "Maine",                     "ME",
+  "Maryland",                  "MD",
+  "Massachusetts",             "MA",
+  "Michigan",                  "MI",
+  "Minnesota",                 "MN",
+  "Mississippi",               "MS",
+  "Missouri",                  "MO",
+  "Montana",                   "MT",
+  "Nebraska",                  "NE",
+  "Nevada",                    "NV",
+  "New Hampshire",             "NH",
+  "New Jersey",                "NJ",
+  "New Mexico",                "NM",
+  "New York",                  "NY",
+  "North Carolina",            "NC",
+  "North Dakota",              "ND",
+  "Ohio",                      "OH",
+  "Oklahoma",                  "OK",
+  "Oregon",                    "OR",
+  "Pennsylvania",              "PA",
+  "Rhode Island",              "RI",
+  "South Carolina",            "SC",
+  "South Dakota",              "SD",
+  "Tennessee",                 "TN",
+  "Texas",                     "TX",
+  "Utah",                      "UT",
+  "Vermont",                   "VT",
+  "Virginia",                  "VA",
+  "Washington",                "WA",
+  "West Virginia",             "WV",
+  "Wisconsin",                 "WI",
+  "Wyoming",                   "WY"
+)
+
+census_data_long <- census_data_long %>%
+  left_join(state_mapping, by = "states")
+
+merged_data <- state_data %>%
+  left_join(
+    census_data_long %>% select(state_abbr_exp, year, population),
+    by = c("state" = "state_abbr_exp", "year" = "year")
+  )
+
+# define total_num_sub 
+merged_data <- merged_data %>%
+  group_by(year,state) %>%
+  mutate(total_num_sub = sum(num_sub)) %>%
+  ungroup()
+
+# define the proportion_of_applicants column
+merged_data <- merged_data %>%
+  mutate(proportion_of_applicants = total_num_sub / population)
+
+# plot proportion of applications by state (facet by year)
+merged_data %>%
+  ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  coord_flip() +
+  facet_wrap(~year, scales = "free") +
+  labs(
+    title = "Proportion of Applications/Population Size by State",
+    y = "Proportion of Applicants",
+    x = "State"
+  )
+```
+# plot proportion of black-name application by state (facet by year)
+Note: no difference in the proportion of black-name applications across states by the experimental design.
+
+```{r}
+merged_data %>%
+  ggplot(aes(x = reorder(state, proportion_black_name), y = proportion_black_name)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  coord_flip() +
+  facet_wrap(~year, scales = "free") +
+  labs(
+    title = "Proportion of Black-Name /Total Applications by State",
+    y = "Proportion of Black-Name Applicants",
+    x = "State"
+  )
+```
+
+# plot callback rate by state (facet by year)
+```{r}
+merged_data %>%
+  ggplot(aes(x = reorder(state, callback_rate), y = callback_rate)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  coord_flip() +
+  facet_wrap(~year, scales = "free") +
+  labs(
+    title = "Callback Rate by State",
+    y = "Callback Rate",
+    x = "State"
+  )
+```
+# logit model to estimate the relationship between callback rate and age
+```{r}
+mod_1 <-glm(callback_rate ~ age, data = merged_data, family = binomial(link = "logit"))
+stargazer(mod_1, type = "text", digits = 3)
+```
+
+# visualizing the relationship between callback rate and age
+```{r}
+merged_data %>%
+  ggplot(aes(x = age, y = callback_rate)) +
+  geom_point() +
+  geom_smooth(method = "glm", 
+              method.args = list(family = binomial(link = "logit")), 
+              se = TRUE) +
+  labs(
+    title = "Relationship between Callback Rate and Age (Logit))",
+    y = "Callback Rate",
+    x = "Age"
+  )
+```
+# two-way fixed effects model to estimate the relationship between callback rate and age
+```{r}
+merged_data <- merged_data %>%
+  mutate(success = callback_rate * num_sub)
+  # here we convert the callback rate to the number of callbacks for the fixed effects linear model
+
+# within variations (year + state fixed effects)
+mod_2 <- feols(success ~ age | state + year, data = merged_data)
+summary(mod_2)
+```
+
+# visualizing the relationship between callback rate and age under fixed effect
+```{r}
+# demean age: 
+mod_age <- feols(age ~ 1 | state + year, data = merged_data)
+merged_data <- merged_data %>%
+  mutate(age_demeaned = resid(mod_age))
+
+# demean success:
+mod_rate <- feols(success ~ 1 | state + year, data = merged_data)
+merged_data <- merged_data %>%
+  mutate(success_demeaned = resid(mod_rate))
+
+ggplot(merged_data, aes(x = age_demeaned, y = success_demeaned)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(
+    title = " Relationship between Number of Successful Application and Age (Demeaned by State and Year)",
+    x = "Age",
+    y = "Number of Successful Application"
+  )
+```
+# save the merged data for future use
+```{r}
+saveRDS(merged_data, "dataset/merged_data_state_by_year.rds")
+```
