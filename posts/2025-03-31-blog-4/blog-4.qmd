@@ -8,7 +8,9 @@ draft: FALSE
 ---
 
 Note: Experiment data is from 2019-2021, while census data is from 2019-2024.
-The following code aggregate application level data to the state level and merge it with the census data to calculate the proportion of applications by state. The analysis aims to provide insights into the distribution of applications across states and how it relates to the population size.
+The following code aggregate application level data to the **state** level and merge it with the census data to calculate the proportion of applications by state. 
+
+This exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.
 
 ```{r}
 rm(list = ls())
@@ -46,22 +48,6 @@ The dataset originates from the landmark study *"Systemic Discrimination Among L
 - **Research Questions:** The study explores whether discrimination is endemic to particular firms, investigates firm-level heterogeneity in callback rates, and considers the potential impact of industry, geographic location, and other structural factors.
 
 The census data was retrieved from the United States Census Bureau at this link: https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html
-
-
-## Check distribution of submissions by state
-The following code creates a bar plot that orders states by the count of submissions. This visualization helps identify geographic patterns in the data, which may be related to regional hiring practices or other local factors.
-```{r}
-data %>%
-  count(state) %>%
-  arrange(desc(n)) %>% 
-  ggplot(aes(y = reorder(state, n), x = n)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  labs(
-    title = "Distribution of States (Ordered by Count)",
-    y = "State",
-    x = "Count"
-  )
-```
 
 # aggregate experiment data by state, year, and race
 ```{r}
@@ -208,49 +194,44 @@ merged_data <- merged_data %>%
   mutate(proportion_of_applicants = total_num_sub / population)
 
 # plot proportion of applications by state (facet by year)
-merged_data %>%
-  ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  coord_flip() +
-  facet_wrap(~year, scales = "free") +
-  labs(
-    title = "Proportion of Applications/Population Size by State",
-    y = "Proportion of Applicants",
-    x = "State"
-  )
+#merged_data %>%
+  #ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +
+  #geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  #coord_flip() +
+  #facet_wrap(~year, scales = "free") +
+  #labs(
+   # title = "Proportion of Applications/Population Size by State",
+    #y = "Proportion of Applicants",
+    #x = "State"
+  #)
 ```
-# plot proportion of black-name application by state (facet by year)
-Note: no difference in the proportion of black-name applications across states by the experimental design.
-
-```{r}
-merged_data %>%
-  ggplot(aes(x = reorder(state, proportion_black_name), y = proportion_black_name)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  coord_flip() +
-  facet_wrap(~year, scales = "free") +
-  labs(
-    title = "Proportion of Black-Name /Total Applications by State",
-    y = "Proportion of Black-Name Applicants",
-    x = "State"
-  )
-```
-
 # plot callback rate by state (facet by year)
 ```{r}
-merged_data %>%
-  ggplot(aes(x = reorder(state, callback_rate), y = callback_rate)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+national_summary <- merged_data %>%
+  group_by(year) %>%
+  summarise(
+    mean_callback = mean(callback_rate, na.rm = TRUE),
+  )
+
+ggplot(merged_data, aes(x = reorder(state, callback_rate, FUN = median), y = callback_rate)) +
+  geom_violin(fill = "skyblue", color = "black", na.rm = TRUE) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.6) +
+  geom_hline(data = national_summary, aes(yintercept = mean_callback), color = "darkred", linetype = "dashed") +
   coord_flip() +
-  facet_wrap(~year, scales = "free") +
+  facet_wrap(~year, scales = "free", drop = FALSE) +
   labs(
-    title = "Callback Rate by State",
+    title = "Callback Rate by State with Annual National Mean",
     y = "Callback Rate",
     x = "State"
   )
 ```
+
+
 # logit model to estimate the relationship between callback rate and age
 ```{r}
-mod_1 <-glm(callback_rate ~ age, data = merged_data, family = binomial(link = "logit"))
+merged_data <- merged_data %>%
+  mutate(success = callback_rate * num_sub)
+mod_1 <-lm(success ~ age, data = merged_data)
 stargazer(mod_1, type = "text", digits = 3)
 ```
 
@@ -263,7 +244,7 @@ merged_data %>%
               method.args = list(family = binomial(link = "logit")), 
               se = TRUE) +
   labs(
-    title = "Relationship between Callback Rate and Age (Logit))",
+    title = "Relationship between Callback Rate and Age (Logit)",
     y = "Callback Rate",
     x = "Age"
   )
