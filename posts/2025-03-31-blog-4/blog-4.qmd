@@ -7,8 +7,7 @@ date: "2025-03-31"
 draft: FALSE
 ---
 
-Note: Experiment data is from 2019-2021, while census data is from 2019-2024.
-The following code aggregate application level data to the **state** level and merge it with the census data to calculate the proportion of applications by state. 
+Note: Experiment data is from 2019-2021, while census data is from 2019-2024. The following code aggregate application level data to the **state** level and merge it with the census data to calculate the proportion of applications by state.
 
 This exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.
 
@@ -41,15 +40,16 @@ census_data_2 <- census_data_2 %>%
   mutate(states = gsub("^\\.", "", states))
 ```
 
-
 ## Data Background and Context
-The dataset originates from the landmark study *"Systemic Discrimination Among Large U.S. Employers"* (Kline, Rose, and Walters, 2022). 
 
-- **Research Questions:** The study explores whether discrimination is endemic to particular firms, investigates firm-level heterogeneity in callback rates, and considers the potential impact of industry, geographic location, and other structural factors.
+The dataset originates from the landmark study *"Systemic Discrimination Among Large U.S. Employers"* (Kline, Rose, and Walters, 2022).
+
+-   **Research Questions:** The study explores whether discrimination is endemic to particular firms, investigates firm-level heterogeneity in callback rates, and considers the potential impact of industry, geographic location, and other structural factors.
 
 The census data was retrieved from the United States Census Bureau at this link: https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html
 
 # aggregate experiment data by state, year, and race
+
 ```{r}
 data$full_name <- paste(data$firstname, data$lastname)
 data$name_length <- nchar(data$full_name)
@@ -89,6 +89,7 @@ census_data <- census_data %>%
 ```
 
 # Clean Population Data to Longitudinal Format
+
 ```{r}
 # create a state abbr column for merging
 census_data$state_abbr <- toupper(substr(census_data$states, 1, 2))
@@ -112,7 +113,6 @@ unique(census_data$states)
 ```{r}
 unique(state_data$year)
 ```
-
 
 ```{r}
 unique(census_data_long$year)
@@ -193,19 +193,21 @@ merged_data <- merged_data %>%
 merged_data <- merged_data %>%
   mutate(proportion_of_applicants = total_num_sub / population)
 
-# plot proportion of applications by state (facet by year)
-#merged_data %>%
-  #ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +
-  #geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  #coord_flip() +
-  #facet_wrap(~year, scales = "free") +
-  #labs(
-   # title = "Proportion of Applications/Population Size by State",
-    #y = "Proportion of Applicants",
-    #x = "State"
-  #)
+#plot proportion of applications by state (facet by year)
+# merged_data %>%
+# ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +
+# geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+# coord_flip() +
+# facet_wrap(~year, scales = "free") +
+# labs(
+# title = "Proportion of Applications/Population Size by State",
+# y = "Proportion of Applicants",
+# x = "State"
+# )
 ```
+
 # plot callback rate by state (facet by year)
+
 ```{r}
 national_summary <- merged_data %>%
   group_by(year) %>%
@@ -226,8 +228,8 @@ ggplot(merged_data, aes(x = reorder(state, callback_rate, FUN = median), y = cal
   )
 ```
 
-
 # logit model to estimate the relationship between callback rate and age
+
 ```{r}
 merged_data <- merged_data %>%
   mutate(success = callback_rate * num_sub)
@@ -235,7 +237,14 @@ mod_1 <-lm(success ~ age, data = merged_data)
 stargazer(mod_1, type = "text", digits = 3)
 ```
 
+### Findings:
+
+-   Positive coefficient (β = 15.967, p = 0.093)
+-   Suggests 1-year age increase → \~16 more callbacks
+-   Marginally significant relationship (p \< 0.1)
+
 # visualizing the relationship between callback rate and age
+
 ```{r}
 merged_data %>%
   ggplot(aes(x = age, y = callback_rate)) +
@@ -249,7 +258,9 @@ merged_data %>%
     x = "Age"
   )
 ```
+
 # two-way fixed effects model to estimate the relationship between callback rate and age
+
 ```{r}
 merged_data <- merged_data %>%
   mutate(success = callback_rate * num_sub)
@@ -260,7 +271,14 @@ mod_2 <- feols(success ~ age | state + year, data = merged_data)
 summary(mod_2)
 ```
 
+### **Findings:**
+
+-   Negative coefficient (β = -11.504, p = 0.084)
+
+-   After controls: 1-year age increase → \~11.5 fewer callbacks
+
 # visualizing the relationship between callback rate and age under fixed effect
+
 ```{r}
 # demean age: 
 mod_age <- feols(age ~ 1 | state + year, data = merged_data)
@@ -281,7 +299,9 @@ ggplot(merged_data, aes(x = age_demeaned, y = success_demeaned)) +
     y = "Number of Successful Application"
   )
 ```
+
 # save the merged data for future use
+
 ```{r}
 saveRDS(merged_data, "dataset/merged_data_state_by_year.rds")
 ```
