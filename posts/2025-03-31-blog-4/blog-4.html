@@ -242,10 +242,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Research Questions:</strong> The study explores whether discrimination is endemic to particular firms, investigates firm-level heterogeneity in callback rates, and considers the potential impact of industry, geographic location, and other structural factors.</li>
 </ul>
 <p>The census data was retrieved from the United States Census Bureau at this link: https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html</p>
-</section>
-<section id="aggregating-application-data-to-state-level" class="level1">
-<h1>Aggregating Application Data to State Level</h1>
-<p>To begin our analysis, we aggregate individual-level application data into state-level summaries. In this section, we create new variables such as the full name (and its length) and calculate the proportion of applicants with black-sounding names. These measures help us capture nuances in the data that might be related to potential discriminatory practices.</p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream # aggregate experiment data by state, year, and race ======= # Aggregating Application Data to State Level To begin our analysis, we aggregate individual-level application data into state-level summaries. In this section, we create new variables such as the full name (and its length) and calculate the proportion of applicants with black-sounding names. These measures help us capture nuances in the data that might be related to potential discriminatory practices. &gt;&gt;&gt;&gt;&gt;&gt;&gt; Stashed changes</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>full_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(data<span class="sc">$</span>firstname, data<span class="sc">$</span>lastname)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>name_length <span class="ot">&lt;-</span> <span class="fu">nchar</span>(data<span class="sc">$</span>full_name)</span>
@@ -421,21 +418,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion_of_applicants =</span> total_num_sub <span class="sc">/</span> population)</span>
 <span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a><span class="co"># plot proportion of applications by state (facet by year)</span></span>
-<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a><span class="co">#merged_data %&gt;%</span></span>
-<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a>  <span class="co">#ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +</span></span>
-<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_bar(stat = "identity", fill = "skyblue", color = "black") +</span></span>
-<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a>  <span class="co">#coord_flip() +</span></span>
-<span id="cb17-80"><a href="#cb17-80" aria-hidden="true" tabindex="-1"></a>  <span class="co">#facet_wrap(~year, scales = "free") +</span></span>
-<span id="cb17-81"><a href="#cb17-81" aria-hidden="true" tabindex="-1"></a>  <span class="co">#labs(</span></span>
-<span id="cb17-82"><a href="#cb17-82" aria-hidden="true" tabindex="-1"></a>   <span class="co"># title = "Proportion of Applications/Population Size by State",</span></span>
-<span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a>    <span class="co">#y = "Proportion of Applicants",</span></span>
-<span id="cb17-84"><a href="#cb17-84" aria-hidden="true" tabindex="-1"></a>    <span class="co">#x = "State"</span></span>
-<span id="cb17-85"><a href="#cb17-85" aria-hidden="true" tabindex="-1"></a>  <span class="co">#)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a><span class="co">#plot proportion of applications by state (facet by year)</span></span>
+<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a><span class="co"># merged_data %&gt;%</span></span>
+<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(aes(x = reorder(state, proportion_of_applicants), y = proportion_of_applicants)) +</span></span>
+<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a><span class="co"># geom_bar(stat = "identity", fill = "skyblue", color = "black") +</span></span>
+<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a><span class="co"># coord_flip() +</span></span>
+<span id="cb17-80"><a href="#cb17-80" aria-hidden="true" tabindex="-1"></a><span class="co"># facet_wrap(~year, scales = "free") +</span></span>
+<span id="cb17-81"><a href="#cb17-81" aria-hidden="true" tabindex="-1"></a><span class="co"># labs(</span></span>
+<span id="cb17-82"><a href="#cb17-82" aria-hidden="true" tabindex="-1"></a><span class="co"># title = "Proportion of Applications/Population Size by State",</span></span>
+<span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a><span class="co"># y = "Proportion of Applicants",</span></span>
+<span id="cb17-84"><a href="#cb17-84" aria-hidden="true" tabindex="-1"></a><span class="co"># x = "State"</span></span>
+<span id="cb17-85"><a href="#cb17-85" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="plot-callback-rate-by-state-facet-by-year" class="level1">
-<h1>Plot callback rate by state (facet by year)</h1>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream # plot callback rate by state (facet by year)</p>
+<p>======= # Plot callback rate by state (facet by year)</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>national_summary <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
@@ -495,9 +491,17 @@ Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 </div>
 </div>
 <p>While the linear model is a simplification, it serves as a starting point for our further investigation using fixed effects.</p>
+<section id="findings" class="level3">
+<h3 class="anchored" data-anchor-id="findings">Findings:</h3>
+<ul>
+<li>Positive coefficient (β = 15.967, p = 0.093)</li>
+<li>Suggests 1-year age increase → ~16 more callbacks</li>
+<li>Marginally significant relationship (p &lt; 0.1)</li>
+</ul>
 </section>
-<section id="visualizing-the-logit-relationship-between-callback-rate-and-age" class="level1">
-<h1>Visualizing the Logit Relationship between Callback Rate and Age</h1>
+</section>
+<section id="visualizing-the-relationship-between-callback-rate-and-age-logit" class="level1">
+<h1>Visualizing the Relationship between Callback Rate and Age (Logit)</h1>
 <p>To complement our regression analysis, we visualize the relationship between age and callback rate using a scatter plot with a fitted smooth curve. This plot helps to highlight any nonlinearities or trends that may not be apparent from the regression output alone.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>merged_data <span class="sc">%&gt;%</span></span>
@@ -547,6 +551,13 @@ RMSE: 105.6     Adj. R2: 0.262927
               Within R2: 0.020129</code></pre>
 </div>
 </div>
+<section id="findings-1" class="level3">
+<h3 class="anchored" data-anchor-id="findings-1"><strong>Findings:</strong></h3>
+<ul>
+<li><p>Negative coefficient (β = 14.3495, p = 0.014188)</p></li>
+<li><p>Within the same state: 1-year age increase → ~14.3 more callbacks for all age groups on average.</p></li>
+</ul>
+</section>
 </section>
 <section id="visualizing-the-relationship-between-callback-rate-and-age-under-fixed-effect" class="level1">
 <h1>Visualizing the relationship between callback rate and age under fixed effect</h1>
@@ -581,9 +592,7 @@ RMSE: 105.6     Adj. R2: 0.262927
 </div>
 </div>
 </div>
-</section>
-<section id="between-fixed-effect-effect-of-age-on-success-between-states" class="level1">
-<h1>Between Fixed Effect: Effect of Age on Success between States</h1>
+<p>======= # Between Fixed Effect: Effect of Age on Success between States</p>
 <p>Finally, we assess the effect of age on success between states while controlling for year-specific effects. This model examines whether differences in average age across states are associated with variations in callback success at a broader level.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mod_3 <span class="ot">&lt;-</span> <span class="fu">feols</span>(success <span class="sc">~</span> age <span class="sc">|</span>year, <span class="at">data =</span> merged_data)</span>
