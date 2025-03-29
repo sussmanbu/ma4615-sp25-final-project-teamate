@@ -243,8 +243,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>The census data was retrieved from the United States Census Bureau at this link: https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html</p>
 </section>
-<section id="aggregate-experiment-data-by-state-year-and-race" class="level1">
-<h1>aggregate experiment data by state, year, and race</h1>
+<section id="aggregating-application-data-to-state-level" class="level1">
+<h1>Aggregating Application Data to State Level</h1>
+<p>To begin our analysis, we aggregate individual-level application data into state-level summaries. In this section, we create new variables such as the full name (and its length) and calculate the proportion of applicants with black-sounding names. These measures help us capture nuances in the data that might be related to potential discriminatory practices.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>full_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(data<span class="sc">$</span>firstname, data<span class="sc">$</span>lastname)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>name_length <span class="ot">&lt;-</span> <span class="fu">nchar</span>(data<span class="sc">$</span>full_name)</span>
@@ -271,8 +272,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="clean-census-data---continued" class="level1">
-<h1>clean census data - continued</h1>
+<section id="cleaning-and-reshaping-census-data---continued" class="level1">
+<h1>Cleaning and Reshaping Census Data - continued</h1>
+<p>The next step involves cleaning the census data. This dataset provides annual state population counts, which we reshape into a longitudinal (panel) format to facilitate merging with the state-level application data. The cleaning process includes renaming columns, removing extraneous rows, and filtering to include only the relevant states.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(census_data)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"states"</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -343,6 +345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>[1] 2020 2021 2022 2023 2024 2019</code></pre>
 </div>
 </div>
+<p>We further process the census data to create a state-year panel, including the state abbreviations necessary for merging with the experimental data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>state_mapping <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>states,                     <span class="sc">~</span>state_abbr_exp,</span>
@@ -432,7 +435,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="plot-callback-rate-by-state-facet-by-year" class="level1">
-<h1>plot callback rate by state (facet by year)</h1>
+<h1>Plot callback rate by state (facet by year)</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>national_summary <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
@@ -460,8 +463,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="logit-model-to-estimate-the-relationship-between-callback-rate-and-age" class="level1">
-<h1>logit model to estimate the relationship between callback rate and age</h1>
+<section id="statistical-modeling-linear-relating-age-to-callback-success" class="level1">
+<h1>Statistical Modeling (Linear): Relating Age to Callback Success</h1>
+<p>In the first model, we transform the callback rate into a count of successes by multiplying it with the number of submissions.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">success =</span> callback_rate <span class="sc">*</span> num_sub)</span>
@@ -490,9 +494,11 @@ F Statistic            2.818* (df = 1; 149)
 Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 </div>
 </div>
+<p>While the linear model is a simplification, it serves as a starting point for our further investigation using fixed effects.</p>
 </section>
-<section id="visualizing-the-relationship-between-callback-rate-and-age" class="level1">
-<h1>visualizing the relationship between callback rate and age</h1>
+<section id="visualizing-the-logit-relationship-between-callback-rate-and-age" class="level1">
+<h1>Visualizing the Logit Relationship between Callback Rate and Age</h1>
+<p>To complement our regression analysis, we visualize the relationship between age and callback rate using a scatter plot with a fitted smooth curve. This plot helps to highlight any nonlinearities or trends that may not be apparent from the regression output alone.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> callback_rate)) <span class="sc">+</span></span>
@@ -517,40 +523,42 @@ Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 </div>
 </div>
 </section>
-<section id="two-way-fixed-effects-model-to-estimate-the-relationship-between-callback-rate-and-age" class="level1">
-<h1>two-way fixed effects model to estimate the relationship between callback rate and age</h1>
+<section id="fixed-effect-effect-of-age-on-success-within-states" class="level1">
+<h1>Fixed Effect: Effect of Age on Success within States</h1>
+<p>The first fixed effects model controls for state-specific characteristics. Here, we decompose age and success into their within-state (demeaned) components, allowing us to examine the relationship between these variables within each state.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">success =</span> callback_rate <span class="sc">*</span> num_sub)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># here we convert the callback rate to the number of callbacks for the fixed effects linear model</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># within variations (year + state fixed effects)</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>mod_2 <span class="ot">&lt;-</span> <span class="fu">feols</span>(success <span class="sc">~</span> age <span class="sc">|</span> state <span class="sc">+</span> year, <span class="at">data =</span> merged_data)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># within-state variations</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>mod_2 <span class="ot">&lt;-</span> <span class="fu">feols</span>(success <span class="sc">~</span> age <span class="sc">|</span> state, <span class="at">data =</span> merged_data)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_2) <span class="co"># positive significant effect of age on success (but this is for all age groups)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>OLS estimation, Dep. Var.: success
 Observations: 151
-Fixed-effects: state: 51,  year: 3
+Fixed-effects: state: 51
 Standard-errors: Clustered (state) 
     Estimate Std. Error t value Pr(&gt;|t|)    
-age -11.5037    6.53436 -1.7605 0.084439 .  
+age  14.3495    5.64623 2.54143 0.014188 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-RMSE: 69.8     Adj. R2: 0.6712  
-             Within R2: 0.022975</code></pre>
+RMSE: 105.6     Adj. R2: 0.262927
+              Within R2: 0.020129</code></pre>
 </div>
 </div>
 </section>
 <section id="visualizing-the-relationship-between-callback-rate-and-age-under-fixed-effect" class="level1">
-<h1>visualizing the relationship between callback rate and age under fixed effect</h1>
+<h1>Visualizing the relationship between callback rate and age under fixed effect</h1>
+<p>We then visualize this within-state relationship by plotting the demeaned variables.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># demean age: </span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>mod_age <span class="ot">&lt;-</span> <span class="fu">feols</span>(age <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> state <span class="sc">+</span> year, <span class="at">data =</span> merged_data)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>mod_age <span class="ot">&lt;-</span> <span class="fu">feols</span>(age <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> state, <span class="at">data =</span> merged_data)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_demeaned =</span> <span class="fu">resid</span>(mod_age))</span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># demean success:</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>mod_rate <span class="ot">&lt;-</span> <span class="fu">feols</span>(success <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> state <span class="sc">+</span> year, <span class="at">data =</span> merged_data)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>mod_rate <span class="ot">&lt;-</span> <span class="fu">feols</span>(success <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> state, <span class="at">data =</span> merged_data)</span>
 <span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">success_demeaned =</span> <span class="fu">resid</span>(mod_rate))</span>
 <span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
@@ -558,7 +566,7 @@ RMSE: 69.8     Adj. R2: 0.6712
 <span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
 <span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">" Relationship between Number of Successful Application and Age (Demeaned by State and Year)"</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">" Relationship between Number of Successful Application and Age (Within-State)"</span>,</span>
 <span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Age"</span>,</span>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Successful Application"</span></span>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -574,10 +582,30 @@ RMSE: 69.8     Adj. R2: 0.6712
 </div>
 </div>
 </section>
+<section id="between-fixed-effect-effect-of-age-on-success-between-states" class="level1">
+<h1>Between Fixed Effect: Effect of Age on Success between States</h1>
+<p>Finally, we assess the effect of age on success between states while controlling for year-specific effects. This model examines whether differences in average age across states are associated with variations in callback success at a broader level.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mod_3 <span class="ot">&lt;-</span> <span class="fu">feols</span>(success <span class="sc">~</span> age <span class="sc">|</span>year, <span class="at">data =</span> merged_data)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_3) <span class="co"># no significant effect of age on success </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: success
+Observations: 151
+Fixed-effects: year: 3
+Standard-errors: Clustered (year) 
+    Estimate Std. Error  t value Pr(&gt;|t|) 
+age    1.451    3.08765 0.469936  0.68466 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 129.9     Adj. R2: 0.248447
+              Within R2: 1.778e-4</code></pre>
+</div>
+</div>
+</section>
 <section id="save-the-merged-data-for-future-use" class="level1">
 <h1>save the merged data for future use</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_data, <span class="st">"dataset/merged_data_state_by_year.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(merged_data, <span class="st">"dataset/merged_data_state_by_year.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
