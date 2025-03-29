@@ -48,7 +48,8 @@ The dataset originates from the landmark study *"Systemic Discrimination Among L
 
 The census data was retrieved from the United States Census Bureau at this link: https://www.census.gov/data/tables/time-series/demo/popest/2020s-state-total.html
 
-# aggregate experiment data by state, year, and race
+# Aggregating Application Data to State Level
+To begin our analysis, we aggregate individual-level application data into state-level summaries. In this section, we create new variables such as the full name (and its length) and calculate the proportion of applicants with black-sounding names. These measures help us capture nuances in the data that might be related to potential discriminatory practices.
 
 ```{r}
 data$full_name <- paste(data$firstname, data$lastname)
@@ -66,7 +67,9 @@ state_data <- data %>%
 unique(state_data$state)
 ```
 
-# clean census data - continued
+# Cleaning and Reshaping Census Data - continued
+
+The next step involves cleaning the census data. This dataset provides annual state population counts, which we reshape into a longitudinal (panel) format to facilitate merging with the state-level application data. The cleaning process includes renaming columns, removing extraneous rows, and filtering to include only the relevant states.
 
 ```{r}
 colnames(census_data)[1] <- "states"
@@ -117,7 +120,7 @@ unique(state_data$year)
 ```{r}
 unique(census_data_long$year)
 ```
-
+We further process the census data to create a state-year panel, including the state abbreviations necessary for merging with the experimental data.
 ```{r}
 state_mapping <- tibble::tribble(
   ~states,                     ~state_abbr_exp,
@@ -206,7 +209,7 @@ merged_data <- merged_data %>%
 # )
 ```
 
-# plot callback rate by state (facet by year)
+# Plot callback rate by state (facet by year)
 
 ```{r}
 national_summary <- merged_data %>%
@@ -228,14 +231,18 @@ ggplot(merged_data, aes(x = reorder(state, callback_rate, FUN = median), y = cal
   )
 ```
 
-# logit model to estimate the relationship between callback rate and age
 
+
+# Statistical Modeling (Linear): Relating Age to Callback Success
+
+In the first model, we transform the callback rate into a count of successes by multiplying it with the number of submissions.
 ```{r}
 merged_data <- merged_data %>%
   mutate(success = callback_rate * num_sub)
 mod_1 <-lm(success ~ age, data = merged_data)
 stargazer(mod_1, type = "text", digits = 3)
 ```
+While the linear model is a simplification, it serves as a starting point for our further investigation using fixed effects.
 
 ### Findings:
 
@@ -243,7 +250,10 @@ stargazer(mod_1, type = "text", digits = 3)
 -   Suggests 1-year age increase → \~16 more callbacks
 -   Marginally significant relationship (p \< 0.1)
 
-# visualizing the relationship between callback rate and age
+
+# Visualizing the Relationship between Callback Rate and Age (Logit)
+
+To complement our regression analysis, we visualize the relationship between age and callback rate using a scatter plot with a fitted smooth curve. This plot helps to highlight any nonlinearities or trends that may not be apparent from the regression output alone.
 
 ```{r}
 merged_data %>%
@@ -259,34 +269,39 @@ merged_data %>%
   )
 ```
 
-# two-way fixed effects model to estimate the relationship between callback rate and age
+
+
+#  Fixed Effect: Effect of Age on Success within States
+
+The first fixed effects model controls for state-specific characteristics. Here, we decompose age and success into their within-state (demeaned) components, allowing us to examine the relationship between these variables within each state.
 
 ```{r}
 merged_data <- merged_data %>%
   mutate(success = callback_rate * num_sub)
   # here we convert the callback rate to the number of callbacks for the fixed effects linear model
 
-# within variations (year + state fixed effects)
-mod_2 <- feols(success ~ age | state + year, data = merged_data)
-summary(mod_2)
+# within-state variations
+mod_2 <- feols(success ~ age | state, data = merged_data)
+summary(mod_2) # positive significant effect of age on success (but this is for all age groups)
 ```
 
 ### **Findings:**
 
--   Negative coefficient (β = -11.504, p = 0.084)
+-   Negative coefficient (β = 14.3495, p = 	0.014188)
 
--   After controls: 1-year age increase → \~11.5 fewer callbacks
+-   Within the same state: 1-year age increase → \~14.3 more callbacks for all age groups on average.
 
-# visualizing the relationship between callback rate and age under fixed effect
 
+# Visualizing the relationship between callback rate and age under fixed effect
+We then visualize this within-state relationship by plotting the demeaned variables.
 ```{r}
 # demean age: 
-mod_age <- feols(age ~ 1 | state + year, data = merged_data)
+mod_age <- feols(age ~ 1 | state, data = merged_data)
 merged_data <- merged_data %>%
   mutate(age_demeaned = resid(mod_age))
 
 # demean success:
-mod_rate <- feols(success ~ 1 | state + year, data = merged_data)
+mod_rate <- feols(success ~ 1 | state, data = merged_data)
 merged_data <- merged_data %>%
   mutate(success_demeaned = resid(mod_rate))
 
@@ -294,10 +309,20 @@ ggplot(merged_data, aes(x = age_demeaned, y = success_demeaned)) +
   geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", color = "blue") +
   labs(
-    title = " Relationship between Number of Successful Application and Age (Demeaned by State and Year)",
+    title = " Relationship between Number of Successful Application and Age (Within-State)",
     x = "Age",
     y = "Number of Successful Application"
   )
+```
+
+=======
+# Between Fixed Effect: Effect of Age on Success between States
+
+Finally, we assess the effect of age on success between states while controlling for year-specific effects. This model examines whether differences in average age across states are associated with variations in callback success at a broader level.
+
+```{r}
+mod_3 <- feols(success ~ age |year, data = merged_data)
+summary(mod_3) # no significant effect of age on success 
 ```
 
 # save the merged data for future use
