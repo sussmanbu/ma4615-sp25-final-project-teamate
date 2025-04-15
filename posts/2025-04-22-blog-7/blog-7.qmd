@@ -1,0 +1,45 @@
+---
+title: "Blog 7: Interactive Analysis"
+description: |
+  Description of datasets found.
+author: "TEAMATE"
+date: "2025-04-18"
+draft: FALSE
+runtime: shiny
+execute:
+  echo: false
+---
+
+This post replicates the table 1 and 2 in the paper in R.
+
+Note: Experiment data is from 2019-2021, while census data is from 2019-2024. The following code aggregate application level data to the **state** level and merge it with the census data to calculate the proportion of applications by state.
+
+This exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.
+
+```{r}
+rm(list = ls())
+# hide warnings
+# Clean the workspace and load packages.
+rm(list = ls())
+options(warn = -1)
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(readxl))
+suppressPackageStartupMessages(library(fixest))
+suppressPackageStartupMessages(library(usmap))
+suppressPackageStartupMessages(library(lfe))
+suppressPackageStartupMessages(library(lmtest))
+suppressPackageStartupMessages(library(sandwich))
+suppressPackageStartupMessages(library(multiwayvcov))
+
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(lfe)
+library(tidyr)
+
+# Load the cleaned data.
+data <- readRDS("dataset/cleaned_data.rds")
+```

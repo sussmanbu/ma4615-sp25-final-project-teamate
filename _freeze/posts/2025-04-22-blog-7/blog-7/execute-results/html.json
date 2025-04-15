@@ -1,0 +1,15 @@
+{
+  "hash": "bfe571578962a1bdf48febe42fa92bff",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Blog 7: Interactive Analysis\"\ndescription: |\n  Description of datasets found.\nauthor: \"TEAMATE\"\ndate: \"2025-04-18\"\ndraft: FALSE\nruntime: shiny\nexecute:\n  echo: false\n---\n\n\n\nThis post replicates the table 1 and 2 in the paper in R.\n\nNote: Experiment data is from 2019-2021, while census data is from 2019-2024. The following code aggregate application level data to the **state** level and merge it with the census data to calculate the proportion of applications by state.\n\nThis exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.\n\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n<script>\n// Import libraries from Observable.\nimport {Inputs} from \"@observablehq/inputs\";\nimport {Plot} from \"@observablehq/plot\";\n\n// Create dummy data. \n// Replace this with your real data as needed.\ndata = Array.from({length: 100}, (_, i) => {\n  return {\n    order: i + 1,\n    Estimate: Math.random(),  // Mean callback rate\n    race: Math.random() < 0.5 ? \"Black\" : \"White\",\n    gender: Math.random() < 0.5 ? \"Male\" : \"Female\",\n    firstname: String.fromCharCode(65 + Math.floor(Math.random() * 26))\n  }\n});\n\n// Create interactive dropdowns for race and gender.\nviewof race_filter = Inputs.select([\"All\", \"Black\", \"White\"], { label: \"Select Race:\" });\nviewof gender_filter = Inputs.select([\"All\", \"Female\", \"Male\"], { label: \"Select Gender:\" });\n\n// Create a cell that filters the data based on the selected inputs.\nfilteredData = {\n  // Get the current input values.\n  const race = race_filter,\n        gender = gender_filter;\n  \n  // Filter the data.\n  return data.filter(d => (race === \"All\" || d.race === race)\n                        && (gender === \"All\" || d.gender === gender));\n}\n\n// Create the scatter plot using the filtered data.\nPlot.plot({\n  x: { label: \"Applicant Order\" },\n  y: { label: \"Mean Callback Rate\" },\n  marks: [\n    Plot.dot(filteredData, {\n      x: \"order\",\n      y: \"Estimate\",\n      fill: \"race\",  // Color by race (could also combine with gender)\n      title: d => `${d.firstname} (${d.gender})`\n    })\n  ],\n  width: 600,\n  height: 400\n})\n</script>\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
