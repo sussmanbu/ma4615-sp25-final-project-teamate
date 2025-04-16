@@ -132,7 +132,7 @@ logit_bal_coefs <- coeftest(fit_logit_bal, vcov = cl_vcov_logit_bal)
 #print(logit_bal_coefs)
 ```
 
-```{r,warning=FALSE, message=FALSE}
+```{r, include=FALSE}
 suppressWarnings(
   suppressMessages(
 table_reg <- stargazer(fit_lpm_all, fit_logit_all, fit_lpm_bal, fit_logit_bal,
