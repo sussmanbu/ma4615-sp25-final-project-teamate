@@ -166,12 +166,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#diagnostic-plots" id="toc-diagnostic-plots" class="nav-link" data-scroll-target="#diagnostic-plots">Diagnostic Plots</a>
   <ul class="collapse">
   <li><a href="#importing-the-cleaned-data" id="toc-importing-the-cleaned-data" class="nav-link" data-scroll-target="#importing-the-cleaned-data">Importing the Cleaned Data</a></li>
-  </ul></li>
   <li><a href="#check-for-outliers-in-age-at-submission" id="toc-check-for-outliers-in-age-at-submission" class="nav-link" data-scroll-target="#check-for-outliers-in-age-at-submission">Check for outliers in Age at Submission</a></li>
   <li><a href="#check-distribution-of-submissions-throughout-years" id="toc-check-distribution-of-submissions-throughout-years" class="nav-link" data-scroll-target="#check-distribution-of-submissions-throughout-years">Check distribution of submissions throughout years</a></li>
   <li><a href="#distribution-of-submissions-by-state" id="toc-distribution-of-submissions-by-state" class="nav-link" data-scroll-target="#distribution-of-submissions-by-state">Distribution of Submissions by State</a></li>
-  <li><a href="#geographic-distribution-of-submissions-versus-population-by-state" id="toc-geographic-distribution-of-submissions-versus-population-by-state" class="nav-link" data-scroll-target="#geographic-distribution-of-submissions-versus-population-by-state">Geographic Distribution of Submissions Versus Population By State</a>
-  <ul class="collapse">
+  <li><a href="#geographic-distribution-of-submissions-versus-population-by-state" id="toc-geographic-distribution-of-submissions-versus-population-by-state" class="nav-link" data-scroll-target="#geographic-distribution-of-submissions-versus-population-by-state">Geographic Distribution of Submissions Versus Population By State</a></li>
+  </ul></li>
   <li><a href="#what-makes-a-good-data-set" id="toc-what-makes-a-good-data-set" class="nav-link" data-scroll-target="#what-makes-a-good-data-set">What makes a good data set?</a></li>
   <li><a href="#where-to-keep-data" id="toc-where-to-keep-data" class="nav-link" data-scroll-target="#where-to-keep-data">Where to keep data?</a>
   <ul class="collapse">
@@ -179,7 +178,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#clean-data-script" id="toc-clean-data-script" class="nav-link" data-scroll-target="#clean-data-script">Clean data script</a></li>
   </ul></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -285,9 +283,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/merged_data_state_by_year.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-</section>
-<section id="check-for-outliers-in-age-at-submission" class="level1">
-<h1>Check for outliers in Age at Submission</h1>
+<section id="check-for-outliers-in-age-at-submission" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-outliers-in-age-at-submission">Check for outliers in Age at Submission</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(data<span class="sc">$</span>age_at_sub, <span class="at">main =</span> <span class="st">"Age at Submission"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -299,8 +296,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="check-distribution-of-submissions-throughout-years" class="level1">
-<h1>Check distribution of submissions throughout years</h1>
+<section id="check-distribution-of-submissions-throughout-years" class="level3">
+<h3 class="anchored" data-anchor-id="check-distribution-of-submissions-throughout-years">Check distribution of submissions throughout years</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> month)) <span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.5</span>, <span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  </span>
@@ -324,8 +321,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="distribution-of-submissions-by-state" class="level1">
-<h1>Distribution of Submissions by State</h1>
+<section id="distribution-of-submissions-by-state" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-of-submissions-by-state">Distribution of Submissions by State</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(state) <span class="sc">%&gt;%</span></span>
@@ -346,8 +343,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="geographic-distribution-of-submissions-versus-population-by-state" class="level1">
-<h1>Geographic Distribution of Submissions Versus Population By State</h1>
+<section id="geographic-distribution-of-submissions-versus-population-by-state" class="level3">
+<h3 class="anchored" data-anchor-id="geographic-distribution-of-submissions-versus-population-by-state">Geographic Distribution of Submissions Versus Population By State</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cross_sectional <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
@@ -397,6 +394,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Your first steps in this project will be to find data to work on.</p>
 <p>I recommend trying to find data that interests you and that you are knowledgeable about. A bad example would be if you have no interest in video games but your data set is about video games. I also recommend finding data that is related to current events, social justice, and other areas that have an impact.</p>
 <p>Initially, you will study <em>one dataset</em> but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable. Data from the census, weather data, economic data, are all relatively easy to combine with other data with time/location components.</p>
+</section>
+</section>
 <section id="what-makes-a-good-data-set" class="level2">
 <h2 class="anchored" data-anchor-id="what-makes-a-good-data-set">What makes a good data set?</h2>
 <ul>
@@ -453,7 +452,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
