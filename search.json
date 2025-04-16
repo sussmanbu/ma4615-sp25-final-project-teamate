@@ -25,7 +25,7 @@
     "href": "data.html#data-cleaning-process",
     "title": "Data",
     "section": "Data Cleaning Process",
-    "text": "Data Cleaning Process\nThe raw data was imported, cleaned, and transformed using R. The cleaning process involved:\n\nRenaming variables and recoding factors for clarity.\nRemoving duplicate and inconsistent entries.\nAggregating multiple data files (if applicable) to produce the final cleaned dataset.\nSaving the cleaned dataset as an RDS file for efficient reloading in analyses.\n\nFor census data and aggregation, we follow the process below:\n\nVariables were renamed and factors recoded for clarity.\nDuplicate and inconsistent entries were eliminated.\nIndividual application records were aggregated to the state level.\nThe state-level application data was merged with census population counts to calculate the proportion of applications relative to state populations."
+    "text": "Data Cleaning Process\n\nThe raw data was imported, cleaned, and transformed using R. The cleaning process involved:\n\nRenaming variables and recoding factors for clarity.\nRemoving duplicate and inconsistent entries.\nAggregating multiple data files (if applicable) to produce the final cleaned dataset.\nSaving the cleaned dataset as an RDS file for efficient reloading in analyses.\n\nFor census data and aggregation, we follow the process below:\n\nVariables were renamed and factors recoded for clarity.\nDuplicate and inconsistent entries were eliminated.\nIndividual application records were aggregated to the state level.\nThe state-level application data was merged with census population counts to calculate the proportion of applications relative to state populations."
   },
   {
     "objectID": "data.html#diagnostic-plots",
