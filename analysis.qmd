@@ -5,7 +5,7 @@ toc: true
 draft: false
 ---
 
-![](https://upload.wikimedia.org/wikipedia/commons/7/77/Pebbleswithquarzite.jpg)
+![](images/labor-market-information.png)
 
 This comes from the file `analysis.qmd`.
 
@@ -20,17 +20,147 @@ The style of this paper should aim to be that of an academic paper.
 I don't expect this to be of publication quality but you should keep that aim in mind.
 Avoid using "we" too frequently, for example "We also found that ...". Describe your methodology and your findings but don't describe your whole process.
 
-### Example of loading data
+Code Reference: 
 
-The code below shows an example of loading the loan refusal data set (which you should delete at some point).
+-   [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+-   [R for Data Science](https://r4ds.had.co.nz/)
+-   [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)
+-   [R Markdown Reference Guide](https://rmarkdown.rstudio.com/lesson-13.html)
+-   [R Markdown Cheat Sheet](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+-   [gtsummary Package](https://www.danieldsjoberg.com/gtsummary/)
+
+## Loading data
 
 ```{r}
-#install.packages("here")
-library(tidyverse)
-library(here)
-print(getwd())
-data <- read_rds(here::here("dataset/loan_refusal_clean.rds"))
+rm(list = ls())
+# hide warnings
+options(warn = -1)
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(readxl))
+suppressPackageStartupMessages(library(fixest))
+suppressPackageStartupMessages(library(usmap))
+suppressPackageStartupMessages(library(lfe))    
+suppressPackageStartupMessages(library(lmtest))
+suppressPackageStartupMessages(library(sandwich)) 
+suppressPackageStartupMessages(library(multiwayvcov))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(gtsummary))
+suppressPackageStartupMessages(library(htmltools))
+
+
+data <- readRDS(here::here("dataset/cleaned_data.rds"))
 ```
+
+## Motivation
+XXX
+
+## Questions
+XXX
+
+# Summary Statistics
+```{r}
+data2 <- data %>%
+  filter(balanced >= 0) %>% 
+  mutate(
+    balanced_group = if_else(balanced >= 1, "Balanced", "All Firms"),
+    race = if_else(black == 1, "Black", "White"),
+    subgroup = paste(balanced_group, race, sep = " - ")
+  )
+
+tbl <- data2 %>%
+  tbl_summary(
+    by = subgroup,                  
+    include = c(cb, call_cb, email_cb, text_cb),  # select variables to summarize
+    missing = "ifany",                  # do not list missing data separately
+    statistic = list(all_continuous() ~ "{n} / {mean} / {sd} / {median}/ {p25}/ {p75}"),
+  ) %>% 
+  modify_header(
+    label = "**Variable**",
+    stat_by = "**N / Mean / SD**"
+  ) 
+
+tbl
+```
+
+
+## OLS and Logistic Regression: Effect of Resume Characteristics on Contact Rates
+
+```{r}
+data_all <- data %>% filter(balanced >= 0) %>%
+  mutate(wave = factor(wave),
+         region4 = factor(region4))
+data_bal <- data %>% filter(balanced >= 1) %>%
+  mutate(wave = factor(wave),
+         region4 = factor(region4))
+
+
+reg_formula <- as.formula("cb ~ black + female + over40 + political_club + academic_club + 
+                           lgbtq_club + same_gender_pronouns + gender_neutral_pronouns + 
+                           associates + wave + region4")
+
+# Linear Probability Model (LPM)
+fit_lpm_all <- lm(reg_formula, data = data_all)
+# Clustered standard errors by job_id
+cl_vcov_all <- cluster.vcov(fit_lpm_all, data_all$job_id)
+lpm_all_coefs <- coeftest(fit_lpm_all, vcov = cl_vcov_all)
+
+# Logit Model for all firms
+fit_logit_all <- glm(reg_formula, data = data_all, family = binomial(link = "logit"))
+cl_vcov_logit_all <- cluster.vcov(fit_logit_all, data_all$job_id)
+logit_all_coefs <- coeftest(fit_logit_all, vcov = cl_vcov_logit_all)
+
+#print(lpm_all_coefs)
+#print(logit_all_coefs)
+
+```
+
+```{r}
+# (LPM) for balanced sample
+fit_lpm_bal <- lm(reg_formula, data = data_bal)
+cl_vcov_bal <- cluster.vcov(fit_lpm_bal, data_bal$job_id)
+lpm_bal_coefs <- coeftest(fit_lpm_bal, vcov = cl_vcov_bal)
+
+# Logit Model for balanced sample
+fit_logit_bal <- glm(reg_formula, data = data_bal, family = binomial(link = "logit"))
+cl_vcov_logit_bal <- cluster.vcov(fit_logit_bal, data_bal$job_id)
+logit_bal_coefs <- coeftest(fit_logit_bal, vcov = cl_vcov_logit_bal)
+
+#print(lpm_bal_coefs)
+#print(logit_bal_coefs)
+```
+
+```{r,warning=FALSE, message=FALSE}
+suppressWarnings(
+  suppressMessages(
+table_reg <- stargazer(fit_lpm_all, fit_logit_all, fit_lpm_bal, fit_logit_bal,
+          se = list(sqrt(diag(cl_vcov_all)),
+                    sqrt(diag(cl_vcov_logit_all)),
+                    sqrt(diag(cl_vcov_bal)),
+                    sqrt(diag(cl_vcov_logit_bal))),
+          column.labels = c("(All)", "(All)", "(Balanced)", "(Balanced)"),
+          dep.var.labels = "Call Back Prob.",
+          covariate.labels = c("Black", "Female", "Over 40", "Political club",
+                               "Academic club", "LGBTQ club", "Same-gender pronouns",
+                               "Gender-neutral pronouns", "Associate degree",
+                               "Wave 2", "Wave 3", "Wave 4", "Wave 5",
+                               "Midwest", "South", "West"),
+         #omit = "wave|region4", 
+        #omit.labels = c("Wave 1", "Northeast"),
+          star.cutoffs = c(0.10, 0.05, 0.01),
+          notes = "Clustered standard errors by Job ID",
+          type = "html",
+          out = here::here("output/ols_logit_results.html"))
+)
+)
+```
+
+```{r echo=FALSE, results='asis'}
+htmltools::includeHTML("output/ols_logit_results.html")
+```
+
 
 ## Note on Attribution
 
