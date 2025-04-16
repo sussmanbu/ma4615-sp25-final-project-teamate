@@ -155,9 +155,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#example-of-loading-data" id="toc-example-of-loading-data" class="nav-link active" data-scroll-target="#example-of-loading-data">Example of loading data</a></li>
+  <li><a href="#loading-data" id="toc-loading-data" class="nav-link active" data-scroll-target="#loading-data">Loading data</a></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#questions" id="toc-questions" class="nav-link" data-scroll-target="#questions">Questions</a></li>
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics">Summary Statistics</a>
+  <ul class="collapse">
+  <li><a href="#ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates" id="toc-ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates" class="nav-link" data-scroll-target="#ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates">OLS and Logistic Regression: Effect of Resume Characteristics on Contact Rates</a></li>
   <li><a href="#note-on-attribution" id="toc-note-on-attribution" class="nav-link" data-scroll-target="#note-on-attribution">Note on Attribution</a></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -188,52 +194,1098 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/7/77/Pebbleswithquarzite.jpg" class="img-fluid"></p>
+<p><img src="images/labor-market-information.png" class="img-fluid"></p>
 <p>This comes from the file <code>analysis.qmd</code>.</p>
 <p>We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You’ll also reflect on next steps and further analysis.</p>
 <p>The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc.</p>
 <p>While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points. If you want you can link back to your blog posts or create separate pages with more details.</p>
 <p>The style of this paper should aim to be that of an academic paper. I don’t expect this to be of publication quality but you should keep that aim in mind. Avoid using “we” too frequently, for example “We also found that …”. Describe your methodology and your findings but don’t describe your whole process.</p>
-<section id="example-of-loading-data" class="level3">
-<h3 class="anchored" data-anchor-id="example-of-loading-data">Example of loading data</h3>
-<p>The code below shows an example of loading the loan refusal data set (which you should delete at some point).</p>
+<p>Code Reference:</p>
+<ul>
+<li><a href="https://bookdown.org/yihui/rmarkdown/">R Markdown: The Definitive Guide</a></li>
+<li><a href="https://r4ds.had.co.nz/">R for Data Science</a></li>
+<li><a href="https://bookdown.org/yihui/rmarkdown-cookbook/">R Markdown Cookbook</a></li>
+<li><a href="https://rmarkdown.rstudio.com/lesson-13.html">R Markdown Reference Guide</a></li>
+<li><a href="https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf">R Markdown Cheat Sheet</a></li>
+<li><a href="https://www.danieldsjoberg.com/gtsummary/">gtsummary Package</a></li>
+</ul>
+<section id="loading-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-data">Loading data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("here")</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'ggplot2' was built under R version 4.3.3</code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># hide warnings</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(ggplot2))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyverse))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(dplyr))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(stargazer))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(readxl))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(fixest))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(usmap))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(lfe))    </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(lmtest))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(sandwich)) </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(multiwayvcov))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(here))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(gtsummary))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(htmltools))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"dataset/cleaned_data.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'purrr' was built under R version 4.3.3</code></pre>
+</section>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>XXX</p>
+</section>
+<section id="questions" class="level2">
+<h2 class="anchored" data-anchor-id="questions">Questions</h2>
+<p>XXX</p>
+</section>
+<section id="summary-statistics" class="level1">
+<h1>Summary Statistics</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">balanced_group =</span> <span class="fu">if_else</span>(balanced <span class="sc">&gt;=</span> <span class="dv">1</span>, <span class="st">"Balanced"</span>, <span class="st">"All Firms"</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> <span class="fu">if_else</span>(black <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"Black"</span>, <span class="st">"White"</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">subgroup =</span> <span class="fu">paste</span>(balanced_group, race, <span class="at">sep =</span> <span class="st">" - "</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> data2 <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tbl_summary</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> subgroup,                  </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">include =</span> <span class="fu">c</span>(cb, call_cb, email_cb, text_cb),  <span class="co"># select variables to summarize</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">missing =</span> <span class="st">"ifany"</span>,                  <span class="co"># do not list missing data separately</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">statistic =</span> <span class="fu">list</span>(<span class="fu">all_continuous</span>() <span class="sc">~</span> <span class="st">"{n} / {mean} / {sd} / {median}/ {p25}/ {p75}"</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modify_header</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"**Variable**"</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">stat_by =</span> <span class="st">"**N / Mean / SD**"</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="uedqfuxrbe" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uedqfuxrbe table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#uedqfuxrbe thead, #uedqfuxrbe tbody, #uedqfuxrbe tfoot, #uedqfuxrbe tr, #uedqfuxrbe td, #uedqfuxrbe th {
+  border-style: none;
+}
+
+#uedqfuxrbe p {
+  margin: 0;
+  padding: 0;
+}
+
+#uedqfuxrbe .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#uedqfuxrbe .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#uedqfuxrbe .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#uedqfuxrbe .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#uedqfuxrbe .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#uedqfuxrbe .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#uedqfuxrbe .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#uedqfuxrbe .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#uedqfuxrbe .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#uedqfuxrbe .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#uedqfuxrbe .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#uedqfuxrbe .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#uedqfuxrbe .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#uedqfuxrbe .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#uedqfuxrbe .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uedqfuxrbe .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#uedqfuxrbe .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#uedqfuxrbe .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#uedqfuxrbe .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uedqfuxrbe .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#uedqfuxrbe .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uedqfuxrbe .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#uedqfuxrbe .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uedqfuxrbe .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uedqfuxrbe .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uedqfuxrbe .gt_left {
+  text-align: left;
+}
+
+#uedqfuxrbe .gt_center {
+  text-align: center;
+}
+
+#uedqfuxrbe .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#uedqfuxrbe .gt_font_normal {
+  font-weight: normal;
+}
+
+#uedqfuxrbe .gt_font_bold {
+  font-weight: bold;
+}
+
+#uedqfuxrbe .gt_font_italic {
+  font-style: italic;
+}
+
+#uedqfuxrbe .gt_super {
+  font-size: 65%;
+}
+
+#uedqfuxrbe .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#uedqfuxrbe .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#uedqfuxrbe .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#uedqfuxrbe .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#uedqfuxrbe .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#uedqfuxrbe .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#uedqfuxrbe .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#uedqfuxrbe .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#uedqfuxrbe div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Variable</strong></th>
+<th id="stat_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>All Firms - Black</strong><br>
+N = 9,141<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="stat_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>All Firms - White</strong><br>
+N = 9,134<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="stat_3" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Balanced - Black</strong><br>
+N = 32,665<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="stat_4" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Balanced - White</strong><br>
+N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Any contact</td>
+<td class="gt_row gt_center" headers="stat_1">1,972 (22%)</td>
+<td class="gt_row gt_center" headers="stat_2">2,103 (23%)</td>
+<td class="gt_row gt_center" headers="stat_3">7,647 (23%)</td>
+<td class="gt_row gt_center" headers="stat_4">8,380 (26%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Any voicemail contact</td>
+<td class="gt_row gt_center" headers="stat_1">1,246 (14%)</td>
+<td class="gt_row gt_center" headers="stat_2">1,383 (15%)</td>
+<td class="gt_row gt_center" headers="stat_3">5,410 (17%)</td>
+<td class="gt_row gt_center" headers="stat_4">6,052 (19%)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Any email contact</td>
+<td class="gt_row gt_center" headers="stat_1">256 (2.8%)</td>
+<td class="gt_row gt_center" headers="stat_2">263 (2.9%)</td>
+<td class="gt_row gt_center" headers="stat_3">1,357 (4.2%)</td>
+<td class="gt_row gt_center" headers="stat_4">1,414 (4.3%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Any text message contact</td>
+<td class="gt_row gt_center" headers="stat_1">470 (5.1%)</td>
+<td class="gt_row gt_center" headers="stat_2">457 (5.0%)</td>
+<td class="gt_row gt_center" headers="stat_3">880 (2.7%)</td>
+<td class="gt_row gt_center" headers="stat_4">914 (2.8%)</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="5" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> n (%)</td>
+</tr>
+</tfoot>
+
+</table>
+
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'lubridate' was built under R version 4.3.3</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-✔ purrr     1.0.4     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'here' was built under R version 4.3.3</code></pre>
+<section id="ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates" class="level2">
+<h2 class="anchored" data-anchor-id="ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates">OLS and Logistic Regression: Effect of Resume Characteristics on Contact Rates</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_all <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">factor</span>(wave),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">region4 =</span> <span class="fu">factor</span>(region4))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data_bal <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">factor</span>(wave),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">region4 =</span> <span class="fu">factor</span>(region4))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>reg_formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="st">"cb ~ black + female + over40 + political_club + academic_club + </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">                           lgbtq_club + same_gender_pronouns + gender_neutral_pronouns + </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">                           associates + wave + region4"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear Probability Model (LPM)</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>fit_lpm_all <span class="ot">&lt;-</span> <span class="fu">lm</span>(reg_formula, <span class="at">data =</span> data_all)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Clustered standard errors by job_id</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>cl_vcov_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_all, data_all<span class="sc">$</span>job_id)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>lpm_all_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_all, <span class="at">vcov =</span> cl_vcov_all)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Logit Model for all firms</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>fit_logit_all <span class="ot">&lt;-</span> <span class="fu">glm</span>(reg_formula, <span class="at">data =</span> data_all, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>cl_vcov_logit_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_logit_all, data_all<span class="sc">$</span>job_id)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>logit_all_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_logit_all, <span class="at">vcov =</span> cl_vcov_logit_all)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#print(lpm_all_coefs)</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#print(logit_all_coefs)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/hzf/Documents/ma415/ma4615-sp25-final-project-teamate</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (LPM) for balanced sample</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fit_lpm_bal <span class="ot">&lt;-</span> <span class="fu">lm</span>(reg_formula, <span class="at">data =</span> data_bal)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>cl_vcov_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_bal, data_bal<span class="sc">$</span>job_id)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>lpm_bal_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_bal, <span class="at">vcov =</span> cl_vcov_bal)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Logit Model for balanced sample</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>fit_logit_bal <span class="ot">&lt;-</span> <span class="fu">glm</span>(reg_formula, <span class="at">data =</span> data_bal, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>cl_vcov_logit_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_logit_bal, data_bal<span class="sc">$</span>job_id)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>logit_bal_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_logit_bal, <span class="at">vcov =</span> cl_vcov_logit_bal)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#print(lpm_bal_coefs)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#print(logit_bal_coefs)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">getwd</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "/Users/hzf/Documents/ma415/ma4615-sp25-final-project-teamate"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"dataset/loan_refusal_clean.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+
+
+<table class="caption-top table" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td colspan="5" style="border-bottom: 1px solid black"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td colspan="4"><em>Dependent variable:</em></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td colspan="4" style="border-bottom: 1px solid black"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td colspan="4">Call Back Prob.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td><em>OLS</em></td>
+<td><em>logistic</em></td>
+<td><em>OLS</em></td>
+<td><em>logistic</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(All)</td>
+<td>(All)</td>
+<td>(Balanced)</td>
+<td>(Balanced)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(1)</td>
+<td>(2)</td>
+<td>(3)</td>
+<td>(4)</td>
+</tr>
+<tr class="even">
+<td colspan="5" style="border-bottom: 1px solid black"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Black</td>
+<td>-0.021<sup>***</sup></td>
+<td>-0.115<sup>***</sup></td>
+<td>-0.022<sup>***</sup></td>
+<td>-0.123<sup>***</sup></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.002)</td>
+<td>(0.009)</td>
+<td>(0.002)</td>
+<td>(0.011)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Female</td>
+<td>0.0002</td>
+<td>0.001</td>
+<td>-0.0002</td>
+<td>-0.002</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.003)</td>
+<td>(0.017)</td>
+<td>(0.003)</td>
+<td>(0.019)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Over 40</td>
+<td>-0.006<sup>**</sup></td>
+<td>-0.033<sup>**</sup></td>
+<td>-0.005</td>
+<td>-0.027</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.003)</td>
+<td>(0.017)</td>
+<td>(0.003)</td>
+<td>(0.019)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Political club</td>
+<td>-0.002</td>
+<td>-0.010</td>
+<td>-0.003</td>
+<td>-0.017</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.007)</td>
+<td>(0.041)</td>
+<td>(0.008)</td>
+<td>(0.046)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Academic club</td>
+<td>0.010</td>
+<td>0.052</td>
+<td>0.006</td>
+<td>0.028</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.008)</td>
+<td>(0.041)</td>
+<td>(0.009)</td>
+<td>(0.046)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LGBTQ club</td>
+<td>-0.005</td>
+<td>-0.029</td>
+<td>-0.00004</td>
+<td>-0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.005)</td>
+<td>(0.030)</td>
+<td>(0.006)</td>
+<td>(0.034)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Same-gender pronouns</td>
+<td>-0.014<sup>*</sup></td>
+<td>-0.077<sup>*</sup></td>
+<td>-0.013</td>
+<td>-0.068</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.007)</td>
+<td>(0.041)</td>
+<td>(0.008)</td>
+<td>(0.047)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gender-neutral pronouns</td>
+<td>-0.010</td>
+<td>-0.057</td>
+<td>-0.017<sup>**</sup></td>
+<td>-0.095<sup>**</sup></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.008)</td>
+<td>(0.042)</td>
+<td>(0.009)</td>
+<td>(0.048)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Associate degree</td>
+<td>0.001</td>
+<td>0.007</td>
+<td>0.003</td>
+<td>0.014</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.003)</td>
+<td>(0.017)</td>
+<td>(0.003)</td>
+<td>(0.019)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wave 2</td>
+<td>0.054<sup>***</sup></td>
+<td>0.318<sup>***</sup></td>
+<td>0.051<sup>***</sup></td>
+<td>0.302<sup>***</sup></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.011)</td>
+<td>(0.063)</td>
+<td>(0.012)</td>
+<td>(0.069)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wave 3</td>
+<td>0.010</td>
+<td>0.062</td>
+<td>0.017</td>
+<td>0.102</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.010)</td>
+<td>(0.065)</td>
+<td>(0.011)</td>
+<td>(0.072)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wave 4</td>
+<td>0.039<sup>***</sup></td>
+<td>0.238<sup>***</sup></td>
+<td>0.042<sup>***</sup></td>
+<td>0.249<sup>***</sup></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.010)</td>
+<td>(0.064)</td>
+<td>(0.012)</td>
+<td>(0.071)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wave 5</td>
+<td>0.151<sup>***</sup></td>
+<td>0.798<sup>***</sup></td>
+<td>0.162<sup>***</sup></td>
+<td>0.842<sup>***</sup></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.011)</td>
+<td>(0.061)</td>
+<td>(0.013)</td>
+<td>(0.067)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Midwest</td>
+<td>0.063<sup>***</sup></td>
+<td>0.323<sup>***</sup></td>
+<td>0.045<sup>***</sup></td>
+<td>0.230<sup>***</sup></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.012)</td>
+<td>(0.062)</td>
+<td>(0.014)</td>
+<td>(0.069)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">South</td>
+<td>-0.030<sup>***</sup></td>
+<td>-0.170<sup>***</sup></td>
+<td>-0.040<sup>***</sup></td>
+<td>-0.221<sup>***</sup></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.010)</td>
+<td>(0.058)</td>
+<td>(0.012)</td>
+<td>(0.064)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">West</td>
+<td>-0.027<sup>**</sup></td>
+<td>-0.153<sup>**</sup></td>
+<td>-0.039<sup>***</sup></td>
+<td>-0.216<sup>***</sup></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.011)</td>
+<td>(0.065)</td>
+<td>(0.013)</td>
+<td>(0.073)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Constant</td>
+<td>0.207<sup>***</sup></td>
+<td>-1.358<sup>***</sup></td>
+<td>0.219<sup>***</sup></td>
+<td>-1.292<sup>***</sup></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.011)</td>
+<td>(0.067)</td>
+<td>(0.013)</td>
+<td>(0.073)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td colspan="5" style="border-bottom: 1px solid black"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Observations</td>
+<td>83,643</td>
+<td>83,643</td>
+<td>65,368</td>
+<td>65,368</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R<sup>2</sup></td>
+<td>0.024</td>
+<td></td>
+<td>0.024</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Adjusted R<sup>2</sup></td>
+<td>0.024</td>
+<td></td>
+<td>0.024</td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Log Likelihood</td>
+<td></td>
+<td>-45,164.010</td>
+<td></td>
+<td>-35,644.270</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Akaike Inf. Crit.</td>
+<td></td>
+<td>90,362.010</td>
+<td></td>
+<td>71,322.540</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Residual Std. Error</td>
+<td>0.422 (df = 83626)</td>
+<td></td>
+<td>0.425 (df = 65351)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F Statistic</td>
+<td>126.977<sup>***</sup> (df = 16; 83626)</td>
+<td></td>
+<td>101.025<sup>***</sup> (df = 16; 65351)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td colspan="5" style="border-bottom: 1px solid black"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>Note:</em></td>
+<td colspan="4" style="text-align: right;"><sup>*</sup>p&lt;0.1; <sup>**</sup>p&lt;0.05; <sup>***</sup>p&lt;0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td colspan="4" style="text-align: right;">Clustered standard errors by Job ID</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="note-on-attribution" class="level2">
 <h2 class="anchored" data-anchor-id="note-on-attribution">Note on Attribution</h2>
@@ -284,6 +1336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
