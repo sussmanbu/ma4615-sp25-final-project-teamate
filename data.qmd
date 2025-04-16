@@ -8,7 +8,7 @@ editor:
     wrap: sentence
 ---
 
-![](images/data-import-cheatsheet-thumbs.png)
+![](images/experiment-data.png)
 
 This page details our data sources, the cleaning process, and provides initial diagnostic plots.
 For this project, we work with data from the landmark study [*Systemic Discrimination Among Large U.S. Employers*](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HLO4XC) (Kline, Rose, and Walters, 2022).
@@ -53,6 +53,8 @@ For a detailed account of variable definitions and transformations, please refer
 To see how we combine the census data with the application data, please refer to our [census cleaning script](/scripts/load_and_clean_data_with_census.R) 
 
 ## Data Cleaning Process
+
+![](images/data-import-cheatsheet-thumbs.png)
 
 The raw data was imported, cleaned, and transformed using R.
 The cleaning process involved: 
