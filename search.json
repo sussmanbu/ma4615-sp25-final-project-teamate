@@ -287,39 +287,11 @@
     "text": "This comes from the file about.qmd.\nThis is a website for the final project for MA[46]15 Data Science with R by Team TEAMATE.\nThe members of this team are below."
   },
   {
-    "objectID": "about.html#rheona-mehta",
-    "href": "about.html#rheona-mehta",
+    "objectID": "about.html#acknowledgements",
+    "href": "about.html#acknowledgements",
     "title": "About",
-    "section": "Rheona Mehta",
-    "text": "Rheona Mehta\nRheona is a junior studying Economics and Data Science. Github: https://github.com/rhemehta"
-  },
-  {
-    "objectID": "about.html#zifan-huang",
-    "href": "about.html#zifan-huang",
-    "title": "About",
-    "section": "Zifan Huang",
-    "text": "Zifan Huang\nZifan is a senior studying economics. Github: https://github.com/zifan33"
-  },
-  {
-    "objectID": "about.html#catherine-liu",
-    "href": "about.html#catherine-liu",
-    "title": "About",
-    "section": "Catherine Liu",
-    "text": "Catherine Liu\nCatherine is a junior studying computer science and mathematics. Github: https://github.com/catherinel04"
-  },
-  {
-    "objectID": "about.html#aron-diamond",
-    "href": "about.html#aron-diamond",
-    "title": "About",
-    "section": "Aron Diamond",
-    "text": "Aron Diamond\nAron is a masters student studying Bioinformatics. Github: https://github.com/adiama0"
-  },
-  {
-    "objectID": "about.html#xiangfu-meng",
-    "href": "about.html#xiangfu-meng",
-    "title": "About",
-    "section": "Xiangfu Meng",
-    "text": "Xiangfu Meng\nXiangfu is a senior studying biology and statistics. Github:https://github.com/ollyllo\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis is a course project for MA[46]15 Data Science with R at the Boston University. We thank Professor Daniel Sussman and TF Aislinn Sullivan for their guidance and support throughout the course. We also thank our classmates for their feedback. The content and assessments for this course have been modified as part of Boston University’s Designing Antiracist Curricula Fellowship.\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
   },
   {
     "objectID": "big_picture.html",
