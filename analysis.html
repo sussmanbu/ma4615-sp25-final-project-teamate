@@ -157,10 +157,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#loading-data" id="toc-loading-data" class="nav-link active" data-scroll-target="#loading-data">Loading data</a></li>
   <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a></li>
-  <li><a href="#questions" id="toc-questions" class="nav-link" data-scroll-target="#questions">Questions</a></li>
+  <li><a href="#research-questions" id="toc-research-questions" class="nav-link" data-scroll-target="#research-questions">Research Questions</a></li>
   <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics">Summary Statistics</a></li>
-  <li><a href="#ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates" id="toc-ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates" class="nav-link" data-scroll-target="#ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates">OLS and Logistic Regression: Effect of Resume Characteristics on Contact Rates</a></li>
-  <li><a href="#visualization-of-ols-for-balanced-sample" id="toc-visualization-of-ols-for-balanced-sample" class="nav-link" data-scroll-target="#visualization-of-ols-for-balanced-sample">Visualization of OLS for Balanced Sample</a></li>
+  <li><a href="#descriptive-evidence-by-applicants-first-name" id="toc-descriptive-evidence-by-applicants-first-name" class="nav-link" data-scroll-target="#descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</a></li>
+  <li><a href="#causal-effect-of-taste-based-discrimination-on-contact-rates" id="toc-causal-effect-of-taste-based-discrimination-on-contact-rates" class="nav-link" data-scroll-target="#causal-effect-of-taste-based-discrimination-on-contact-rates">Causal Effect of Taste Based Discrimination on Contact Rates</a>
+  <ul class="collapse">
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification">Model Specification</a></li>
+  <li><a href="#visualization-of-ols-estimates" id="toc-visualization-of-ols-estimates" class="nav-link" data-scroll-target="#visualization-of-ols-estimates">Visualization of OLS Estimates</a></li>
+  </ul></li>
+  <li><a href="#heterogeneity-analysis" id="toc-heterogeneity-analysis" class="nav-link" data-scroll-target="#heterogeneity-analysis">Heterogeneity Analysis</a></li>
   <li><a href="#note-on-attribution" id="toc-note-on-attribution" class="nav-link" data-scroll-target="#note-on-attribution">Note on Attribution</a></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
   </ul>
@@ -195,12 +200,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p><img src="images/labor-market-information.png" class="img-fluid"></p>
 <p>This comes from the file <code>analysis.qmd</code>.</p>
-<p>We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You’ll also reflect on next steps and further analysis.</p>
-<p>The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc.</p>
-<p>While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points. If you want you can link back to your blog posts or create separate pages with more details.</p>
-<p>The style of this paper should aim to be that of an academic paper. I don’t expect this to be of publication quality but you should keep that aim in mind. Avoid using “we” too frequently, for example “We also found that …”. Describe your methodology and your findings but don’t describe your whole process.</p>
 <p>Code Reference:</p>
 <ul>
+<li><a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HLO4XC">Systemic Discrimination Among Large U.S. Employers</a></li>
 <li><a href="https://bookdown.org/yihui/rmarkdown/">R Markdown: The Definitive Guide</a></li>
 <li><a href="https://r4ds.had.co.nz/">R for Data Science</a></li>
 <li><a href="https://bookdown.org/yihui/rmarkdown-cookbook/">R Markdown Cookbook</a></li>
@@ -228,18 +230,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(here))</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(gtsummary))</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(htmltools))</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"dataset/cleaned_data.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(broom))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(stringr))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"dataset/cleaned_data.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>XXX</p>
+<p>Despite decades of regulatory and legal efforts to eliminate hiring discrimination, numerous field experiments continue to document persistent gaps in employer callback rates by race. In the study by <a href="https://ekrose.github.io/files/randres.pdf">Rose et al.&nbsp;(2022)</a>, the large scale fake resume experiment among the Fortune 500 firms in the US enables us to investigate the extent of taste based discrimination in hiring practices.</p>
+<p>In a nutshell, the study sends fake resumes with randomly assigned characteristics to entry level positions among large U.S employers. This is an example of how a sample of resumes looks like:</p>
+<p><img src="images/example-resume.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> sourced from Figure A1: Examples of applicant resumes in the Rose et al.&nbsp;(2022) paper.</p>
+</blockquote>
 </section>
-<section id="questions" class="level2">
-<h2 class="anchored" data-anchor-id="questions">Questions</h2>
-<p>XXX</p>
+<section id="research-questions" class="level2">
+<h2 class="anchored" data-anchor-id="research-questions">Research Questions</h2>
+<p>There is a famous saying:</p>
+<blockquote class="blockquote">
+<p>Correlation does not imply causation.</p>
+</blockquote>
+<p>This is especially true when it comes to the dialogue of racial disparity from the data-driven point of view. In the previous correlation based analysis, the discrimination gap may be mis-specified due to omitted variable bias (OVB). For instance, instead of taste-based discrimination, the labor market outcome inequality may be driven by different level of educational attainment, work experience, or other factors that are not controlled for.</p>
+<p>This analysis leverages the powerful experimental data and codes from the Rose et al.&nbsp;(2022) paper to estimate the causal impact of being Black on the probability of receiving a callback.</p>
+<p>The analysis is based on the following research questions:</p>
+<ol type="1">
+<li><strong>Does tasted based discrimination cause differential labor market outcome in the U.S?</strong></li>
+</ol>
+<ul>
+<li>If so, how large is the magnitude?</li>
+</ul>
+<ol start="2" type="1">
+<li><strong>Is there evidence of intersectional heterogeneity—that is, does the magnitude of the Black callback penalty vary by another trait?</strong><br>
+</li>
+</ol>
+<ul>
+<li>If so, how large is the magnitude?</li>
+</ul>
+<ol start="3" type="1">
+<li><strong>Do firm‑ or month‑level shocks attenuate or amplify measured discrimination?</strong></li>
+</ol>
 </section>
 <section id="summary-statistics" class="level2">
 <h2 class="anchored" data-anchor-id="summary-statistics">Summary Statistics</h2>
@@ -266,23 +296,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="iwjsqugchj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#iwjsqugchj table {
+<div id="qupejjljod" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qupejjljod table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#iwjsqugchj thead, #iwjsqugchj tbody, #iwjsqugchj tfoot, #iwjsqugchj tr, #iwjsqugchj td, #iwjsqugchj th {
+#qupejjljod thead, #qupejjljod tbody, #qupejjljod tfoot, #qupejjljod tr, #qupejjljod td, #qupejjljod th {
   border-style: none;
 }
 
-#iwjsqugchj p {
+#qupejjljod p {
   margin: 0;
   padding: 0;
 }
 
-#iwjsqugchj .gt_table {
+#qupejjljod .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -308,12 +338,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_caption {
+#qupejjljod .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#iwjsqugchj .gt_title {
+#qupejjljod .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -325,7 +355,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#iwjsqugchj .gt_subtitle {
+#qupejjljod .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -337,7 +367,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#iwjsqugchj .gt_heading {
+#qupejjljod .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -349,13 +379,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_bottom_border {
+#qupejjljod .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_col_headings {
+#qupejjljod .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -370,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_col_heading {
+#qupejjljod .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -390,7 +420,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#iwjsqugchj .gt_column_spanner_outer {
+#qupejjljod .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -402,15 +432,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#iwjsqugchj .gt_column_spanner_outer:first-child {
+#qupejjljod .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#iwjsqugchj .gt_column_spanner_outer:last-child {
+#qupejjljod .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#iwjsqugchj .gt_column_spanner {
+#qupejjljod .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -422,11 +452,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#iwjsqugchj .gt_spanner_row {
+#qupejjljod .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#iwjsqugchj .gt_group_heading {
+#qupejjljod .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -452,7 +482,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#iwjsqugchj .gt_empty_group_heading {
+#qupejjljod .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -467,15 +497,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#iwjsqugchj .gt_from_md > :first-child {
+#qupejjljod .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#iwjsqugchj .gt_from_md > :last-child {
+#qupejjljod .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#iwjsqugchj .gt_row {
+#qupejjljod .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -494,7 +524,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#iwjsqugchj .gt_stub {
+#qupejjljod .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -507,7 +537,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#iwjsqugchj .gt_stub_row_group {
+#qupejjljod .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -521,15 +551,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#iwjsqugchj .gt_row_group_first td {
+#qupejjljod .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#iwjsqugchj .gt_row_group_first th {
+#qupejjljod .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#iwjsqugchj .gt_summary_row {
+#qupejjljod .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -539,16 +569,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#iwjsqugchj .gt_first_summary_row {
+#qupejjljod .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_first_summary_row.thick {
+#qupejjljod .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#iwjsqugchj .gt_last_summary_row {
+#qupejjljod .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -558,7 +588,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_grand_summary_row {
+#qupejjljod .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -568,7 +598,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#iwjsqugchj .gt_first_grand_summary_row {
+#qupejjljod .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -578,7 +608,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_last_grand_summary_row_top {
+#qupejjljod .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -588,11 +618,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_striped {
+#qupejjljod .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#iwjsqugchj .gt_table_body {
+#qupejjljod .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -601,7 +631,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_footnotes {
+#qupejjljod .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -615,7 +645,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_footnote {
+#qupejjljod .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -624,7 +654,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#iwjsqugchj .gt_sourcenotes {
+#qupejjljod .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -638,7 +668,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#iwjsqugchj .gt_sourcenote {
+#qupejjljod .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -646,72 +676,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#iwjsqugchj .gt_left {
+#qupejjljod .gt_left {
   text-align: left;
 }
 
-#iwjsqugchj .gt_center {
+#qupejjljod .gt_center {
   text-align: center;
 }
 
-#iwjsqugchj .gt_right {
+#qupejjljod .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#iwjsqugchj .gt_font_normal {
+#qupejjljod .gt_font_normal {
   font-weight: normal;
 }
 
-#iwjsqugchj .gt_font_bold {
+#qupejjljod .gt_font_bold {
   font-weight: bold;
 }
 
-#iwjsqugchj .gt_font_italic {
+#qupejjljod .gt_font_italic {
   font-style: italic;
 }
 
-#iwjsqugchj .gt_super {
+#qupejjljod .gt_super {
   font-size: 65%;
 }
 
-#iwjsqugchj .gt_footnote_marks {
+#qupejjljod .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#iwjsqugchj .gt_asterisk {
+#qupejjljod .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#iwjsqugchj .gt_indent_1 {
+#qupejjljod .gt_indent_1 {
   text-indent: 5px;
 }
 
-#iwjsqugchj .gt_indent_2 {
+#qupejjljod .gt_indent_2 {
   text-indent: 10px;
 }
 
-#iwjsqugchj .gt_indent_3 {
+#qupejjljod .gt_indent_3 {
   text-indent: 15px;
 }
 
-#iwjsqugchj .gt_indent_4 {
+#qupejjljod .gt_indent_4 {
   text-indent: 20px;
 }
 
-#iwjsqugchj .gt_indent_5 {
+#qupejjljod .gt_indent_5 {
   text-indent: 25px;
 }
 
-#iwjsqugchj .katex-display {
+#qupejjljod .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#iwjsqugchj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#qupejjljod div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -778,210 +808,370 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </div>
 </div>
 </section>
-<section id="ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates" class="level2">
-<h2 class="anchored" data-anchor-id="ols-and-logistic-regression-effect-of-resume-characteristics-on-contact-rates">OLS and Logistic Regression: Effect of Resume Characteristics on Contact Rates</h2>
+<section id="descriptive-evidence-by-applicants-first-name" class="level2">
+<h2 class="anchored" data-anchor-id="descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_all <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">factor</span>(wave),</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">region4 =</span> <span class="fu">factor</span>(region4))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data_bal <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">factor</span>(wave),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">region4 =</span> <span class="fu">factor</span>(region4))</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>reg_formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="st">"cb ~ black + female + over40 + political_club + academic_club + </span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">                           lgbtq_club + same_gender_pronouns + gender_neutral_pronouns + </span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">                           associates + wave + region4"</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear Probability Model (LPM)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>fit_lpm_all <span class="ot">&lt;-</span> <span class="fu">lm</span>(reg_formula, <span class="at">data =</span> data_all)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Clustered standard errors by job_id</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>cl_vcov_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_all, data_all<span class="sc">$</span>job_id)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>lpm_all_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_all, <span class="at">vcov =</span> cl_vcov_all)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Logit Model for all firms</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>fit_logit_all <span class="ot">&lt;-</span> <span class="fu">glm</span>(reg_formula, <span class="at">data =</span> data_all, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>cl_vcov_logit_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_logit_all, data_all<span class="sc">$</span>job_id)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>logit_all_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_logit_all, <span class="at">vcov =</span> cl_vcov_logit_all)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#print(lpm_all_coefs)</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#print(logit_all_coefs)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> data</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">felm</span>(cb <span class="sc">~</span> black <span class="sc">+</span> white <span class="sc">-</span> <span class="dv">1</span><span class="sc">|</span><span class="dv">0</span><span class="sc">|</span><span class="dv">0</span><span class="sc">|</span>job_id, <span class="at">data =</span> df)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ols2 <span class="ot">&lt;-</span> <span class="fu">felm</span>(cb <span class="sc">~</span> <span class="fu">factor</span>(firstname) <span class="sc">-</span> <span class="dv">1</span><span class="sc">|</span><span class="dv">0</span><span class="sc">|</span><span class="dv">0</span><span class="sc">|</span>job_id, <span class="at">data =</span> df)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>coef <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">summary</span>(ols2)<span class="sc">$</span>coefficients)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>coef <span class="ot">&lt;-</span> coef <span class="sc">%&gt;%</span> <span class="fu">rownames_to_column</span>(<span class="at">var=</span><span class="st">'coef'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract</span>(coef, <span class="st">"firstname"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">(firstname</span><span class="sc">\\</span><span class="st">)([A-Za-z]+)"</span>, <span class="at">remove=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>coef <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">select</span>(race,gender,firstname) <span class="sc">%&gt;%</span> distinct <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">right_join</span>(coef, <span class="at">by=</span><span class="st">'firstname'</span>) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(race,gender,firstname) <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">order=</span><span class="fu">row_number</span>())</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>coef[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]<span class="ot">&lt;-</span> <span class="fu">lapply</span>(coef[, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], as.factor)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>coef <span class="ot">&lt;-</span> coef <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="st">"Race and gender"</span><span class="ot">=</span><span class="fu">case_when</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      race <span class="sc">==</span> <span class="st">"Black"</span> <span class="sc">&amp;</span> gender <span class="sc">==</span> <span class="st">"Female"</span> <span class="sc">~</span> <span class="st">"Black, female"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      race <span class="sc">==</span> <span class="st">"Black"</span> <span class="sc">&amp;</span> gender <span class="sc">==</span> <span class="st">"Male"</span> <span class="sc">~</span> <span class="st">"Black, male"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>      race <span class="sc">==</span> <span class="st">"White"</span> <span class="sc">&amp;</span> gender <span class="sc">==</span> <span class="st">"Female"</span> <span class="sc">~</span> <span class="st">"White, female"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      race <span class="sc">==</span> <span class="st">"White"</span> <span class="sc">&amp;</span> gender <span class="sc">==</span> <span class="st">"Male"</span> <span class="sc">~</span> <span class="st">"White, male"</span>))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>plot_A3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> coef, </span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">factor</span>(firstname), order), <span class="at">y =</span> Estimate, <span class="at">fill =</span> <span class="st">`</span><span class="at">Race and gender</span><span class="st">`</span>)) <span class="sc">+</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Applicant first name"</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean 30-day callback rate"</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Race and gender"</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span>, <span class="at">y =</span> <span class="fu">coef</span>(ols)[<span class="st">'black'</span>], <span class="at">xend =</span> <span class="dv">38</span>, <span class="at">yend =</span> <span class="fu">coef</span>(ols)[<span class="st">'black'</span>]),</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>               <span class="at">show.legend =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"#F8766D"</span>) <span class="sc">+</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">39</span>, <span class="at">y =</span> <span class="fu">coef</span>(ols)[<span class="st">'white'</span>], <span class="at">xend =</span> <span class="dv">76</span>, <span class="at">yend =</span> <span class="fu">coef</span>(ols)[<span class="st">'white'</span>]),</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>               <span class="at">show.legend =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"#00BFCF"</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(plot_A3, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">width =</span> <span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This figure shows mean contact rates by applicant first name, organized by race and gender group. The horizontal bars show race group mean contact rates.</p>
+</section>
+<section id="causal-effect-of-taste-based-discrimination-on-contact-rates" class="level2">
+<h2 class="anchored" data-anchor-id="causal-effect-of-taste-based-discrimination-on-contact-rates">Causal Effect of Taste Based Discrimination on Contact Rates</h2>
+<p>Due to the nature of experimental data, we are able to estimate the causal effect of large employers’ taste based discrimination on applicant labor market outcomes.</p>
+<section id="model-specification" class="level3">
+<h3 class="anchored" data-anchor-id="model-specification">Model Specification</h3>
+<p>The code estimates the causal effect of being Black on the probability of receiving a callback, controlling for a vector of other resume characteristics. Formally, two specifications:</p>
+<ol type="1">
+<li><strong>Linear probability model (OLS):</strong></li>
+</ol>
+<ul>
+<li>with controls for all sample</li>
+<li>with controls for balanced sample</li>
+<li>two-way fixed effects for all sample</li>
+<li>two-way fixed effects for balanced sample</li>
+</ul>
+<ol start="2" type="1">
+<li><strong>Logistic regression</strong></li>
+</ol>
+<ul>
+<li>with controls for all sample</li>
+<li>with controls for balanced sample</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">submitted_date =</span> <span class="fu">as.Date</span>(submitted_date) </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">first_day_month =</span> <span class="fu">floor_date</span>(submitted_date, <span class="at">unit =</span> <span class="st">"month"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">wday_first =</span> <span class="fu">wday</span>(first_day_month, <span class="at">week_start =</span> <span class="dv">1</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Monday_of_month =</span> first_day_month <span class="sc">+</span> <span class="fu">days</span>((<span class="dv">8</span> <span class="sc">-</span> wday_first) <span class="sc">%%</span> <span class="dv">7</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(submitted_date) <span class="sc">%&gt;%</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_month =</span> <span class="fu">dense_rank</span>(Monday_of_month)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>first_day_month, <span class="sc">-</span>wday_first)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>data_all <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">factor</span>(wave),</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">region4 =</span> <span class="fu">factor</span>(region4))</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>data_bal <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(balanced <span class="sc">&gt;=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">factor</span>(wave),</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>         <span class="at">region4 =</span> <span class="fu">factor</span>(region4))</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>reg_formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="st">"cb ~ black + female + over40 + political_club + academic_club + </span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="st">                           lgbtq_club + same_gender_pronouns + gender_neutral_pronouns + </span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="st">                           associates + wave + region4"</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear Probability Model (LPM)</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>fit_lpm_all <span class="ot">&lt;-</span> <span class="fu">lm</span>(reg_formula, <span class="at">data =</span> data_all)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Clustered standard errors by job_id</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>cl_vcov_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_all, data_all<span class="sc">$</span>job_id)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>lpm_all_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_all, <span class="at">vcov =</span> cl_vcov_all)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># (Two way LPM) for all sample</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>fit_lpm_all_lm_fe <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  cb <span class="sc">~</span> black <span class="sc">+</span> <span class="fu">factor</span>(firm_id) <span class="sc">+</span> <span class="fu">factor</span>(num_month)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  , <span class="at">data =</span> data_all</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>cl_vcov_fe_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_all_lm_fe, data_all<span class="sc">$</span>job_id)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>lpm_all_fe_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_all_lm_fe, <span class="at">vcov =</span> cl_vcov_fe_all)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Logit Model for all firms</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>fit_logit_all <span class="ot">&lt;-</span> <span class="fu">glm</span>(reg_formula, <span class="at">data =</span> data_all, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>cl_vcov_logit_all <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_logit_all, data_all<span class="sc">$</span>job_id)</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>logit_all_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_logit_all, <span class="at">vcov =</span> cl_vcov_logit_all)</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="co">#print(lpm_all_coefs)</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="co">#print(logit_all_coefs)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (LPM) for balanced sample</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fit_lpm_bal <span class="ot">&lt;-</span> <span class="fu">lm</span>(reg_formula, <span class="at">data =</span> data_bal)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>cl_vcov_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_bal, data_bal<span class="sc">$</span>job_id)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>lpm_bal_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_bal, <span class="at">vcov =</span> cl_vcov_bal)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Logit Model for balanced sample</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>fit_logit_bal <span class="ot">&lt;-</span> <span class="fu">glm</span>(reg_formula, <span class="at">data =</span> data_bal, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>cl_vcov_logit_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_logit_bal, data_bal<span class="sc">$</span>job_id)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>logit_bal_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_logit_bal, <span class="at">vcov =</span> cl_vcov_logit_bal)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#print(lpm_bal_coefs)</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#print(logit_bal_coefs)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (LPM) for balanced sample</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fit_lpm_bal <span class="ot">&lt;-</span> <span class="fu">lm</span>(reg_formula, <span class="at">data =</span> data_bal)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cl_vcov_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_bal, data_bal<span class="sc">$</span>job_id)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>lpm_bal_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_bal, <span class="at">vcov =</span> cl_vcov_bal)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># (Two way LPM) for balanced sample</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>fit_lpm_bal_lm_fe <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  cb <span class="sc">~</span> black <span class="sc">+</span> <span class="fu">factor</span>(firm_id) <span class="sc">+</span> <span class="fu">factor</span>(num_month)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  , <span class="at">data =</span> data_bal</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>cl_vcov_fe_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_lpm_bal_lm_fe, data_bal<span class="sc">$</span>job_id)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>lpm_bal_fe_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_lpm_bal_lm_fe, <span class="at">vcov =</span> cl_vcov_fe_bal)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Logit Model for balanced sample</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>fit_logit_bal <span class="ot">&lt;-</span> <span class="fu">glm</span>(reg_formula, <span class="at">data =</span> data_bal, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>cl_vcov_logit_bal <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit_logit_bal, data_bal<span class="sc">$</span>job_id)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>logit_bal_coefs <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(fit_logit_bal, <span class="at">vcov =</span> cl_vcov_logit_bal)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#print(lpm_bal_coefs)</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#print(logit_bal_coefs)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
 <table class="caption-top table" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd">
-<td colspan="5" style="border-bottom: 1px solid black"></td>
+<td colspan="7" style="border-bottom: 1px solid black"></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td colspan="4"><em>Dependent variable:</em></td>
+<td colspan="6"><em>Dependent variable:</em></td>
 </tr>
 <tr class="odd">
 <td></td>
-<td colspan="4" style="border-bottom: 1px solid black"></td>
+<td colspan="6" style="border-bottom: 1px solid black"></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td colspan="4">Call Back Prob.</td>
+<td colspan="6">Call Back Prob.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td><em>OLS</em></td>
+<td colspan="2"><em>OLS</em></td>
 <td><em>logistic</em></td>
-<td><em>OLS</em></td>
+<td colspan="2"><em>OLS</em></td>
 <td><em>logistic</em></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td>(All)</td>
-<td>(All)</td>
-<td>(Balanced)</td>
-<td>(Balanced)</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;"></td>
 <td>(1)</td>
 <td>(2)</td>
 <td>(3)</td>
 <td>(4)</td>
-</tr>
-<tr class="even">
-<td colspan="5" style="border-bottom: 1px solid black"></td>
+<td>(5)</td>
+<td>(6)</td>
 </tr>
 <tr class="odd">
+<td colspan="7" style="border-bottom: 1px solid black"></td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Black</td>
 <td>-0.021<sup>***</sup></td>
+<td>-0.020<sup>***</sup></td>
 <td>-0.115<sup>***</sup></td>
+<td>-0.022<sup>***</sup></td>
 <td>-0.022<sup>***</sup></td>
 <td>-0.123<sup>***</sup></td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>(0.002)</td>
-<td>(0.009)</td>
-<td>(0.002)</td>
-<td>(0.011)</td>
-</tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
+<td>(0.003)</td>
+<td>(0.003)</td>
+<td>(0.016)</td>
+<td>(0.003)</td>
+<td>(0.003)</td>
+<td>(0.018)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Female</td>
 <td>0.0002</td>
+<td></td>
 <td>0.001</td>
 <td>-0.0002</td>
+<td></td>
 <td>-0.002</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.003)</td>
-<td>(0.017)</td>
-<td>(0.003)</td>
-<td>(0.019)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
+<td>(0.003)</td>
+<td></td>
+<td>(0.016)</td>
+<td>(0.003)</td>
+<td></td>
+<td>(0.018)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Over 40</td>
 <td>-0.006<sup>**</sup></td>
+<td></td>
 <td>-0.033<sup>**</sup></td>
 <td>-0.005</td>
+<td></td>
 <td>-0.027</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>(0.003)</td>
-<td>(0.017)</td>
-<td>(0.003)</td>
-<td>(0.019)</td>
-</tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
+<td>(0.003)</td>
+<td></td>
+<td>(0.016)</td>
+<td>(0.003)</td>
+<td></td>
+<td>(0.018)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Political club</td>
 <td>-0.002</td>
+<td></td>
 <td>-0.010</td>
 <td>-0.003</td>
+<td></td>
 <td>-0.017</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.007)</td>
-<td>(0.041)</td>
-<td>(0.008)</td>
-<td>(0.046)</td>
-</tr>
 <tr class="even">
 <td style="text-align: left;"></td>
+<td>(0.007)</td>
+<td></td>
+<td>(0.041)</td>
+<td>(0.008)</td>
+<td></td>
+<td>(0.046)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Academic club</td>
 <td>0.010</td>
+<td></td>
 <td>0.052</td>
 <td>0.006</td>
+<td></td>
 <td>0.028</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"></td>
-<td>(0.008)</td>
+<td>(0.007)</td>
+<td></td>
 <td>(0.041)</td>
-<td>(0.009)</td>
+<td>(0.008)</td>
+<td></td>
 <td>(0.046)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;"></td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
+<td></td>
+<td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">LGBTQ club</td>
 <td>-0.005</td>
+<td></td>
 <td>-0.029</td>
 <td>-0.00004</td>
+<td></td>
 <td>-0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>(0.005)</td>
+<td></td>
+<td>(0.030)</td>
+<td>(0.006)</td>
+<td></td>
+<td>(0.034)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td>(0.005)</td>
-<td>(0.030)</td>
-<td>(0.006)</td>
-<td>(0.034)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Same‑gender pronouns</td>
+<td>-0.014<sup>*</sup></td>
+<td></td>
+<td>-0.077<sup>*</sup></td>
+<td>-0.013</td>
+<td></td>
+<td>-0.068</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>(0.007)</td>
+<td></td>
+<td>(0.041)</td>
+<td>(0.008)</td>
+<td></td>
+<td>(0.046)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -989,83 +1179,53 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 <td></td>
 <td></td>
 <td></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Same-gender pronouns</td>
-<td>-0.014<sup>*</sup></td>
-<td>-0.077<sup>*</sup></td>
-<td>-0.013</td>
-<td>-0.068</td>
+<td style="text-align: left;">Gender‑neutral pronouns</td>
+<td>-0.010</td>
+<td></td>
+<td>-0.057</td>
+<td>-0.017<sup>**</sup></td>
+<td></td>
+<td>-0.095<sup>**</sup></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
 <td>(0.007)</td>
+<td></td>
 <td>(0.041)</td>
-<td>(0.008)</td>
-<td>(0.047)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Gender-neutral pronouns</td>
-<td>-0.010</td>
-<td>-0.057</td>
-<td>-0.017<sup>**</sup></td>
-<td>-0.095<sup>**</sup></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.008)</td>
-<td>(0.042)</td>
 <td>(0.009)</td>
+<td></td>
 <td>(0.048)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"></td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
+<td></td>
+<td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Associate degree</td>
 <td>0.001</td>
+<td></td>
 <td>0.007</td>
 <td>0.003</td>
+<td></td>
 <td>0.014</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"></td>
 <td>(0.003)</td>
-<td>(0.017)</td>
+<td></td>
+<td>(0.016)</td>
 <td>(0.003)</td>
-<td>(0.019)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
 <td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Wave 2</td>
-<td>0.054<sup>***</sup></td>
-<td>0.318<sup>***</sup></td>
-<td>0.051<sup>***</sup></td>
-<td>0.302<sup>***</sup></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.011)</td>
-<td>(0.063)</td>
-<td>(0.012)</td>
-<td>(0.069)</td>
+<td>(0.018)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -1073,269 +1233,247 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 <td></td>
 <td></td>
 <td></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Wave 3</td>
-<td>0.010</td>
-<td>0.062</td>
-<td>0.017</td>
-<td>0.102</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>(0.010)</td>
-<td>(0.065)</td>
-<td>(0.011)</td>
-<td>(0.072)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Wave 4</td>
-<td>0.039<sup>***</sup></td>
-<td>0.238<sup>***</sup></td>
-<td>0.042<sup>***</sup></td>
-<td>0.249<sup>***</sup></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.010)</td>
-<td>(0.064)</td>
-<td>(0.012)</td>
-<td>(0.071)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Wave 5</td>
-<td>0.151<sup>***</sup></td>
-<td>0.798<sup>***</sup></td>
-<td>0.162<sup>***</sup></td>
-<td>0.842<sup>***</sup></td>
+<td colspan="7" style="border-bottom: 1px solid black"></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td>(0.011)</td>
-<td>(0.061)</td>
-<td>(0.013)</td>
-<td>(0.067)</td>
+<td style="text-align: left;">Sample</td>
+<td>All Firms</td>
+<td>All Firms</td>
+<td>All Firms</td>
+<td>Balanced</td>
+<td>Balanced</td>
+<td>Balanced</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td style="text-align: left;">Firm FE</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Midwest</td>
-<td>0.063<sup>***</sup></td>
-<td>0.323<sup>***</sup></td>
-<td>0.045<sup>***</sup></td>
-<td>0.230<sup>***</sup></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.012)</td>
-<td>(0.062)</td>
-<td>(0.014)</td>
-<td>(0.069)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">South</td>
-<td>-0.030<sup>***</sup></td>
-<td>-0.170<sup>***</sup></td>
-<td>-0.040<sup>***</sup></td>
-<td>-0.221<sup>***</sup></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>(0.010)</td>
-<td>(0.058)</td>
-<td>(0.012)</td>
-<td>(0.064)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">West</td>
-<td>-0.027<sup>**</sup></td>
-<td>-0.153<sup>**</sup></td>
-<td>-0.039<sup>***</sup></td>
-<td>-0.216<sup>***</sup></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>(0.011)</td>
-<td>(0.065)</td>
-<td>(0.013)</td>
-<td>(0.073)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Constant</td>
-<td>0.207<sup>***</sup></td>
-<td>-1.358<sup>***</sup></td>
-<td>0.219<sup>***</sup></td>
-<td>-1.292<sup>***</sup></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>(0.011)</td>
-<td>(0.067)</td>
-<td>(0.013)</td>
-<td>(0.073)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td colspan="5" style="border-bottom: 1px solid black"></td>
+<td style="text-align: left;">Month FE</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Observations</td>
 <td>83,643</td>
 <td>83,643</td>
+<td>83,643</td>
+<td>65,368</td>
 <td>65,368</td>
 <td>65,368</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">R<sup>2</sup></td>
 <td>0.024</td>
+<td>0.151</td>
 <td></td>
 <td>0.024</td>
+<td>0.130</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Adjusted R<sup>2</sup></td>
 <td>0.024</td>
+<td>0.150</td>
 <td></td>
 <td>0.024</td>
+<td>0.129</td>
 <td></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Log Likelihood</td>
-<td></td>
-<td>-45,164.010</td>
-<td></td>
-<td>-35,644.270</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Akaike Inf. Crit.</td>
-<td></td>
-<td>90,362.010</td>
-<td></td>
-<td>71,322.540</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Residual Std. Error</td>
-<td>0.422 (df = 83626)</td>
-<td></td>
-<td>0.425 (df = 65351)</td>
-<td></td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">F Statistic</td>
 <td>126.977<sup>***</sup> (df = 16; 83626)</td>
+<td>120.790<sup>***</sup> (df = 123; 83519)</td>
 <td></td>
 <td>101.025<sup>***</sup> (df = 16; 65351)</td>
+<td>112.290<sup>***</sup> (df = 87; 65280)</td>
 <td></td>
 </tr>
+<tr class="odd">
+<td colspan="7" style="border-bottom: 1px solid black"></td>
+</tr>
 <tr class="even">
-<td colspan="5" style="border-bottom: 1px solid black"></td>
+<td style="text-align: left;"><em>Note:</em></td>
+<td colspan="6" style="text-align: right;"><sup>*</sup>p&lt;0.1; <sup>**</sup>p&lt;0.05; <sup>***</sup>p&lt;0.01</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><em>Note:</em></td>
-<td colspan="4" style="text-align: right;"><sup>*</sup>p&lt;0.1; <sup>**</sup>p&lt;0.05; <sup>***</sup>p&lt;0.01</td>
-</tr>
-<tr class="even">
 <td style="text-align: left;"></td>
-<td colspan="4" style="text-align: right;">Clustered standard errors by Job ID</td>
+<td colspan="6" style="text-align: right;">Clustered SEs by job</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="visualization-of-ols-for-balanced-sample" class="level2">
-<h2 class="anchored" data-anchor-id="visualization-of-ols-for-balanced-sample">Visualization of OLS for Balanced Sample</h2>
+<section id="visualization-of-ols-estimates" class="level3">
+<h3 class="anchored" data-anchor-id="visualization-of-ols-estimates">Visualization of OLS Estimates</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>term_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">black                        =</span> <span class="st">"Black"</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">female                       =</span> <span class="st">"Female"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">over40                       =</span> <span class="st">"Over 40"</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_neutral_pronouns      =</span> <span class="st">"Gender Neutral pronouns"</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">associates                   =</span> <span class="st">"Associate degree"</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lgbtq_club                   =</span> <span class="st">"LGBTQ club"</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">political_club               =</span> <span class="st">"Political club"</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">academic_club                =</span> <span class="st">"Academic club"</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>coef_df <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit_lpm_bal) <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower_ci =</span> estimate <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> std.error,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper_ci =</span> estimate <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> std.error</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term, estimate, lower_ci, upper_ci)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Registered S3 method overwritten by 'broom':
-  method    from
-  nobs.felm lfe </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>coef_df2 <span class="ot">&lt;-</span> coef_df <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">names</span>(term_labels)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">term =</span> <span class="fu">factor</span>(term,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">levels =</span> <span class="fu">names</span>(term_labels),</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">labels =</span> term_labels)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(coef_df2, <span class="fu">aes</span>(<span class="at">x =</span> term, <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"darkred"</span>) <span class="sc">+</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower_ci, <span class="at">ymax =</span> upper_ci), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"OLS Estimates for Time Invariant Covariates"</span>,</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="cn">NULL</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Coefficient Estimate"</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>term_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">black                   =</span> <span class="st">"Black"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">female                  =</span> <span class="st">"Female"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">over40                  =</span> <span class="st">"Over 40"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender_neutral_pronouns =</span> <span class="st">"Gender Neutral pronouns"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">associates              =</span> <span class="st">"Associate degree"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lgbtq_club              =</span> <span class="st">"LGBTQ club"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">political_club          =</span> <span class="st">"Political club"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">academic_club           =</span> <span class="st">"Academic club"</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>models_lpm <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">All      =</span> fit_lpm_all,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Balanced =</span> fit_lpm_bal</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>coef_df_lpm <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">names</span>(models_lpm), <span class="cf">function</span>(sample) {</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    broom<span class="sc">::</span><span class="fu">tidy</span>(models_lpm[[sample]]) <span class="sc">%&gt;%</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">names</span>(term_labels)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">lower_ci =</span> estimate <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> std.error,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">upper_ci =</span> estimate <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> std.error,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">sample   =</span> sample</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(term, estimate, lower_ci, upper_ci, sample)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>coef_df_lpm <span class="ot">&lt;-</span> coef_df_lpm <span class="sc">%&gt;%</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">term =</span> <span class="fu">factor</span>(term,</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>                  <span class="at">levels =</span> <span class="fu">names</span>(term_labels),</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>                  <span class="at">labels =</span> term_labels)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(coef_df_lpm, <span class="fu">aes</span>(<span class="at">x =</span> term, <span class="at">y =</span> estimate, <span class="at">color =</span> sample, <span class="at">shape =</span> sample)) <span class="sc">+</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"gray60"</span>) <span class="sc">+</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.7</span>), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower_ci, <span class="at">ymax =</span> upper_ci),</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.7</span>),</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"LPM (OLS) Coefficients for Key Resume Traits (95% CI)"</span>,</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="cn">NULL</span>,</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Coefficient Estimate"</span>,</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">color    =</span> <span class="st">"Sample"</span>,</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape    =</span> <span class="st">"Sample"</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="analysis_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="analysis_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="heterogeneity-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="heterogeneity-analysis">Heterogeneity Analysis</h2>
+<p>In this section, we use <strong>interaction terms</strong> to explore how the effect of being Black on labor market outcomes varies across different characteristics of the resumes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"female"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"over40"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"political_club"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"academic_club"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lgbtq_club"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"same_gender_pronouns"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"gender_neutral_pronouns"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"associates"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>full_formula <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"cb ~ "</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"black:"</span>, vars, <span class="at">collapse =</span> <span class="st">" + "</span>),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">" + wave + region4"</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>get_coef_df <span class="ot">&lt;-</span> <span class="cf">function</span>(data, sample_name) {</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  fit  <span class="ot">&lt;-</span> <span class="fu">lm</span>(full_formula, <span class="at">data =</span> data)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  vcov <span class="ot">&lt;-</span> <span class="fu">cluster.vcov</span>(fit, data<span class="sc">$</span>job_id)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  broom<span class="sc">::</span><span class="fu">tidy</span>(fit, <span class="at">vcov =</span> vcov, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">str_detect</span>(term, <span class="st">"^black:"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">sample =</span> sample_name,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">pretty_term =</span> <span class="fu">recode</span>(</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        term,</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:female"</span>                  <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Female"</span>,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:over40"</span>                  <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Over&nbsp;40"</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:political_club"</span>          <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Political&nbsp;club"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:academic_club"</span>           <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Academic&nbsp;club"</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:lgbtq_club"</span>              <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;LGBTQ&nbsp;club"</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:same_gender_pronouns"</span>    <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Same Gender&nbsp;Pronouns"</span>,</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:gender_neutral_pronouns"</span> <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Gender Neutral&nbsp;Pronouns"</span>,</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">"black:associates"</span>              <span class="ot">=</span> <span class="st">"Black&nbsp;×&nbsp;Associate&nbsp;degree"</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>coef_all  <span class="ot">&lt;-</span> <span class="fu">get_coef_df</span>(data_all,  <span class="st">"All"</span>)</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>coef_bal  <span class="ot">&lt;-</span> <span class="fu">get_coef_df</span>(data_bal,  <span class="st">"Balanced"</span>)</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>coef_both <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(coef_all, coef_bal) <span class="sc">%&gt;%</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">pretty_term =</span> <span class="fu">factor</span>(</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>      pretty_term,</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="fu">c</span>(</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Female"</span>,</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Over&nbsp;40"</span>,</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Political&nbsp;club"</span>,</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Academic&nbsp;club"</span>,</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;LGBTQ&nbsp;club"</span>,</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Same Gender&nbsp;Pronouns"</span>,</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Gender Neutral&nbsp;Pronouns"</span>,</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Black&nbsp;×&nbsp;Associate&nbsp;degree"</span></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(coef_both, <span class="fu">aes</span>(<span class="at">x =</span> pretty_term, <span class="at">y =</span> estimate, <span class="at">color =</span> sample, <span class="at">shape =</span> sample)) <span class="sc">+</span></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"gray60"</span>) <span class="sc">+</span></span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.7</span>), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high),</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>                <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.7</span>),</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"LPM (OLS) Heterogenous Treatment Effect Estimates (95% CI)"</span>,</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="cn">NULL</span>,</span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Estimated Interaction"</span>,</span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">color    =</span> <span class="st">"Sample"</span>,</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape    =</span> <span class="st">"Sample"</span></span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x   =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span></span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1388,6 +1526,10 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 <li>This page should be self-contained, i.e.&nbsp;provide a description of the relevant data.</li>
 </ul></li>
 </ul>
+<p>We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You’ll also reflect on next steps and further analysis.</p>
+<p>The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc.</p>
+<p>While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points. If you want you can link back to your blog posts or create separate pages with more details.</p>
+<p>The style of this paper should aim to be that of an academic paper. I don’t expect this to be of publication quality but you should keep that aim in mind. Avoid using “we” too frequently, for example “We also found that …”. Describe your methodology and your findings but don’t describe your whole process.</p>
 
 
 </section>
