@@ -177,10 +177,22 @@ ul.task-list li input[type="checkbox"] {
 #| standalone: true
 #| viewerHeight: 640 # You will have to adjust this to fit everything
 # ```{shinylive-r} when ready to publish
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(readxl))
+suppressPackageStartupMessages(library(fixest))
+suppressPackageStartupMessages(library(usmap))
+suppressPackageStartupMessages(library(lfe))
+suppressPackageStartupMessages(library(lmtest))
+suppressPackageStartupMessages(library(sandwich))
+suppressPackageStartupMessages(library(multiwayvcov))
+suppressPackageStartupMessages(library(wordcloud2))
+suppressPackageStartupMessages(library(stringdist))
+suppressPackageStartupMessages(library(MatchIt))
+suppressPackageStartupMessages(library(shiny))
 
-library(shiny)
-library(tidyverse)
-library(wordcloud2)
 options("readr.edition" = 1) # keep this to ensure you can download the data
 data &lt;- read_rds("https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds")
 
