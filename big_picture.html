@@ -209,8 +209,6 @@ ui &lt;- fluidPage(
     mainPanel(
       wordcloud2Output("name_wc", width = "100%", height = "600px"),
       br(),
-      textOutput("jw_annotation"),
-      br(),
       h4("Top Names by Callback Rate"),
       tableOutput("top_callbacks")
     )
@@ -233,18 +231,6 @@ server &lt;- function(input, output, session) {
     wordcloud2(df, size = 1)
   })
 
-
-  output$jw_annotation &lt;- renderText({
-    req(input$gender_wc)
-    white_names &lt;- data %&gt;% filter(race == "White", gender == input$gender_wc) %&gt;% pull(firstname) %&gt;% unique()
-    black_names &lt;- data %&gt;% filter(race == "Black", gender == input$gender_wc) %&gt;% pull(firstname) %&gt;% unique()
-    jw_mat &lt;- stringdistmatrix(white_names, black_names, method = "jw")
-    avg_jw &lt;- mean(jw_mat, na.rm = TRUE)
-    paste0(
-      "Average Jaro-Winkler distance between White and Black first names (Gender: ",
-      input$gender_wc, "): ", round(avg_jw, 3)
-    )
-  })
 
   output$top_callbacks &lt;- renderTable({
     df &lt;- filtered_wc() %&gt;%

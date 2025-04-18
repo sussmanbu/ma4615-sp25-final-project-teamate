@@ -70,35 +70,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -194,29 +165,11 @@ window.Quarto = {
 <section id="interactive" class="level3">
 <h3 class="anchored" data-anchor-id="interactive">Interactive</h3>
 <p>Your Big Data page should also include a small interactive dashboard. The dashboard should be created either using Shinylive, as below. This interactive component should in some way support your thesis from your big picture page. Good interactives often provide both high-level understanding of the data while allowing a user to investigate specific scenarios, observations, subgroups, etc.</p>
-<p>library(shiny) library(dplyr) library(readr) library(wordcloud2) library(stringdist)</p>
-</section>
-<section id="load-data" class="level1">
-<h1>load data</h1>
-<p>data &lt;- read_rds(“https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds”)</p>
-</section>
-<section id="ui" class="level1">
-<h1>UI</h1>
-<p>ui &lt;- fluidPage( titlePanel(“Interactive Name Analysis Dashboard”), sidebarLayout( sidebarPanel( h4(“Word Cloud Settings”), selectInput(“race_wc”, “Select Race:”, choices = sort(unique(data<span class="math inline">\(race)), selected = "White"),
-      selectInput("gender_wc","Select Gender:", choices = sort(unique(data\)</span>gender)), selected = unique(data$gender)[1]) ), mainPanel( wordcloud2Output(“name_wc”, width = “100%”, height = “600px”), br(), textOutput(“jw_annotation”), br(), h4(“Top Names by Callback Rate”), tableOutput(“top_callbacks”) ) ) )</p>
-</section>
-<section id="server" class="level1">
-<h1>Server</h1>
-<p>server &lt;- function(input, output, session) { filtered_wc &lt;- reactive({ req(input<span class="math inline">\(race_wc, input\)</span>gender_wc) data %&gt;% filter(race == input<span class="math inline">\(race_wc, gender == input\)</span>gender_wc) })</p>
-<p>output$name_wc &lt;- renderWordcloud2({ df &lt;- filtered_wc() %&gt;% count(firstname) %&gt;% arrange(desc(n)) %&gt;% head(100) wordcloud2(df, size = 1) })</p>
-<p>output<span class="math inline">\(jw_annotation &lt;- renderText({
-    req(input\)</span>gender_wc) white_names &lt;- data %&gt;% filter(race==“White”, gender==input<span class="math inline">\(gender_wc) %&gt;% pull(firstname) %&gt;% unique()
-    black_names &lt;- data %&gt;% filter(race=="Black", gender==input\)</span>gender_wc) %&gt;% pull(firstname) %&gt;% unique() jw_mat &lt;- stringdistmatrix(white_names, black_names, method=“jw”) avg_jw &lt;- mean(jw_mat, na.rm=TRUE) paste0( “Average Jaro-Winkler distance between White and Black first names (Gender:”, input$gender_wc, “):”, round(avg_jw, 3) ) })</p>
-<p>output$top_callbacks &lt;- renderTable({ filtered_wc() %&gt;% group_by(firstname) %&gt;% summarise(callback_rate = mean(cb, na.rm=TRUE), count = n(), .groups=“drop”) %&gt;% arrange(desc(callback_rate), desc(count)) %&gt;% head(10) }, rownames = FALSE) }</p>
-</section>
-<section id="launch" class="level1">
-<h1>launch</h1>
-<p>shinyApp(ui, server)</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><iframe data-deferred-src="appcc317f17e436665a90414d399624143f/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+</div>
+</div>
 <p>To get the shinylive-r working.</p>
 <ol type="1">
 <li>Make sure your shiny app works as a regular r chunk.</li>
@@ -229,6 +182,7 @@ window.Quarto = {
 </ol>
 <p>I recommend keeping the data used for the shiny interactive relatively small, though this isn’t completely necessary.</p>
 <hr>
+</section>
 <section id="rubric-on-this-page" class="level2">
 <h2 class="anchored" data-anchor-id="rubric-on-this-page">Rubric: On this page</h2>
 <ul>
@@ -265,7 +219,6 @@ window.Quarto = {
 <p>The main title of your page is informative. Each post has an author/description/informative title. All lab required posts are present. Each page (including the home page) has a nice featured image associated with it. Your about page is up to date and clean. You have removed the generic posts from the initial site template.</p>
 
 
-</section>
 </section>
 </section>
 
