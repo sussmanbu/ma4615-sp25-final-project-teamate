@@ -180,43 +180,71 @@ ul.task-list li input[type="checkbox"] {
 
 library(shiny)
 library(tidyverse)
+library(wordcloud2)
 options("readr.edition" = 1) # keep this to ensure you can download the data
+data &lt;- read_rds("https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds")
 
 
-# Define UI for app that draws a histogram ----
+# Define UI for app
 ui &lt;- fluidPage(
-
-  # App title ----
-  titlePanel("Hello Shiny!"),
-
-  # Sidebar layout with input and output definitions ----
-  verticalLayout(
-      # Input: Slider for the number of bins ----
-      sliderInput(inputId = "bins",
-                  label = "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30),
-
-      # Output: Histogram ----
-      plotOutput(outputId = "distPlot")
-
+  titlePanel("Interactive Name Analysis Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      h4("Word Cloud Settings"),
+      selectInput("race_wc", "Select Race:", choices = sort(unique(data$race)), selected = "White"),
+      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
+    ),
+    mainPanel(
+      wordcloud2Output("name_wc", width = "100%", height = "600px"),
+      br(),
+      textOutput("jw_annotation"),
+      br(),
+      h4("Top Names by Callback Rate"),
+      tableOutput("top_callbacks")
+    )
   )
 )
 
 # Define server logic required to draw a histogram ----
-server &lt;- function(input, output) {
-  # The URL below has to point to a dataset on your github pages website
-  # I recommend creating a small-ish rds file that has only the data relevant to 
-  # the interactive.
-  data &lt;- read_rds("https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/loan_refusal_clean.rds")
-  
-  output$distPlot &lt;- renderPlot({
-    ggplot(data, aes(x = refusal_rate)) +
-      geom_histogram(bins = input$bins + 1)
-
+server &lt;- function(input, output, session) {
+  filtered_wc &lt;- reactive({
+    req(input$race_wc, input$gender_wc)
+    data %&gt;% filter(race == input$race_wc, gender == input$gender_wc)
   })
 
+  
+  output$name_wc &lt;- renderWordcloud2({
+    df &lt;- filtered_wc() %&gt;%
+      count(firstname) %&gt;%
+      arrange(desc(n)) %&gt;%
+      head(100)
+    wordcloud2(df, size = 1)
+  })
+
+
+  output$jw_annotation &lt;- renderText({
+    req(input$gender_wc)
+    white_names &lt;- data %&gt;% filter(race == "White", gender == input$gender_wc) %&gt;% pull(firstname) %&gt;% unique()
+    black_names &lt;- data %&gt;% filter(race == "Black", gender == input$gender_wc) %&gt;% pull(firstname) %&gt;% unique()
+    jw_mat &lt;- stringdistmatrix(white_names, black_names, method = "jw")
+    avg_jw &lt;- mean(jw_mat, na.rm = TRUE)
+    paste0(
+      "Average Jaro-Winkler distance between White and Black first names (Gender: ",
+      input$gender_wc, "): ", round(avg_jw, 3)
+    )
+  })
+
+  output$top_callbacks &lt;- renderTable({
+    df &lt;- filtered_wc() %&gt;%
+      group_by(firstname) %&gt;%
+      summarise(
+        callback_rate = mean(cb, na.rm = TRUE),
+        count = n()
+      ) %&gt;%
+      arrange(desc(callback_rate), desc(count)) %&gt;%
+      head(10)
+    df
+  }, rownames = FALSE)
 }
 
 # Create Shiny app ----

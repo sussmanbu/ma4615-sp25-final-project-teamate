@@ -70,6 +70,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -162,58 +191,83 @@ ul.task-list li input[type="checkbox"] {
 <p>This post replicates the table 1 and 2 in the paper in R.</p>
 <p>Note: Experiment data is from 2019-2021, while census data is from 2019-2024. The following code aggregate application level data to the <strong>state</strong> level and merge it with the census data to calculate the proportion of applications by state.</p>
 <p>This exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.</p>
-<div class="cell">
-<script>
-// Import libraries from Observable.
-import {Inputs} from "@observablehq/inputs";
-import {Plot} from "@observablehq/plot";
+<section id="interactive" class="level3">
+<h3 class="anchored" data-anchor-id="interactive">Interactive</h3>
+<p>Your Big Data page should also include a small interactive dashboard. The dashboard should be created either using Shinylive, as below. This interactive component should in some way support your thesis from your big picture page. Good interactives often provide both high-level understanding of the data while allowing a user to investigate specific scenarios, observations, subgroups, etc.</p>
+<p>library(shiny) library(dplyr) library(readr) library(wordcloud2) library(stringdist)</p>
+</section>
+<section id="load-data" class="level1">
+<h1>load data</h1>
+<p>data &lt;- read_rds(“https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds”)</p>
+</section>
+<section id="ui" class="level1">
+<h1>UI</h1>
+<p>ui &lt;- fluidPage( titlePanel(“Interactive Name Analysis Dashboard”), sidebarLayout( sidebarPanel( h4(“Word Cloud Settings”), selectInput(“race_wc”, “Select Race:”, choices = sort(unique(data<span class="math inline">\(race)), selected = "White"),
+      selectInput("gender_wc","Select Gender:", choices = sort(unique(data\)</span>gender)), selected = unique(data$gender)[1]) ), mainPanel( wordcloud2Output(“name_wc”, width = “100%”, height = “600px”), br(), textOutput(“jw_annotation”), br(), h4(“Top Names by Callback Rate”), tableOutput(“top_callbacks”) ) ) )</p>
+</section>
+<section id="server" class="level1">
+<h1>Server</h1>
+<p>server &lt;- function(input, output, session) { filtered_wc &lt;- reactive({ req(input<span class="math inline">\(race_wc, input\)</span>gender_wc) data %&gt;% filter(race == input<span class="math inline">\(race_wc, gender == input\)</span>gender_wc) })</p>
+<p>output$name_wc &lt;- renderWordcloud2({ df &lt;- filtered_wc() %&gt;% count(firstname) %&gt;% arrange(desc(n)) %&gt;% head(100) wordcloud2(df, size = 1) })</p>
+<p>output<span class="math inline">\(jw_annotation &lt;- renderText({
+    req(input\)</span>gender_wc) white_names &lt;- data %&gt;% filter(race==“White”, gender==input<span class="math inline">\(gender_wc) %&gt;% pull(firstname) %&gt;% unique()
+    black_names &lt;- data %&gt;% filter(race=="Black", gender==input\)</span>gender_wc) %&gt;% pull(firstname) %&gt;% unique() jw_mat &lt;- stringdistmatrix(white_names, black_names, method=“jw”) avg_jw &lt;- mean(jw_mat, na.rm=TRUE) paste0( “Average Jaro-Winkler distance between White and Black first names (Gender:”, input$gender_wc, “):”, round(avg_jw, 3) ) })</p>
+<p>output$top_callbacks &lt;- renderTable({ filtered_wc() %&gt;% group_by(firstname) %&gt;% summarise(callback_rate = mean(cb, na.rm=TRUE), count = n(), .groups=“drop”) %&gt;% arrange(desc(callback_rate), desc(count)) %&gt;% head(10) }, rownames = FALSE) }</p>
+</section>
+<section id="launch" class="level1">
+<h1>launch</h1>
+<p>shinyApp(ui, server)</p>
+<p>To get the shinylive-r working.</p>
+<ol type="1">
+<li>Make sure your shiny app works as a regular r chunk.</li>
+<li>Make sure that the chunk is completely self-contained. Meaning all packages and data are loaded inside that chunk. It can’t rely on any other chunks.</li>
+<li>For the data that you are using for shiny, copy the rds file or any other files into the scripts folder, and then publish your website.</li>
+<li>Where you load in your data, change it to use a URL to the data set which will now be on your website. Something like read_rds(“https://sussmanbu.github.io/ma-4615-fa24-final-project-group-a/scripts/dataset_for_shiny.rds”)</li>
+<li>Check that the chunk still works as a regular r chunk.</li>
+<li>Change it to a shinylive-r chunk.</li>
+<li>Commit and publish your work.</li>
+</ol>
+<p>I recommend keeping the data used for the shiny interactive relatively small, though this isn’t completely necessary.</p>
+<hr>
+<section id="rubric-on-this-page" class="level2">
+<h2 class="anchored" data-anchor-id="rubric-on-this-page">Rubric: On this page</h2>
+<ul>
+<li>Title
+<ul>
+<li>Your big picture page should have a creative/click-bait-y title/headline that provides a hint about your thesis.</li>
+</ul></li>
+<li>Clarity of Explanation
+<ul>
+<li>You should have a clear thesis/goal for this page. What are you trying to show? Make sure that you explain your analysis in detail but don’t go into top much mathematics or statistics. The audience for this page is the general public (to the extent possible). Your thesis should be a statement, not a question.</li>
+<li>Each figure should be very polished and also not too complicated. There should be a clear interpretation of the figure so the figure has a clear purpose. Even something like a histogram can be difficult to interpret for non-experts.</li>
+</ul></li>
+<li>Creativity
+<ul>
+<li>Do your best to make things interesting. Think of a how a news article or a magazine story might draw you in. Think of how each part of your analysis supports the previous part or provides a different perspective.</li>
+</ul></li>
+<li>Interactive component
+<ul>
+<li>Quality and ease of use of the interactive components. Is it clear what can be explored using your interactive components? Does it enhance and reinforce your conclusions?</li>
+</ul></li>
+<li>This page should be self-contained.</li>
+</ul>
+<p><strong>Note</strong>: This page should have no code visible, i.e.&nbsp;use <code>#| echo: FALSE</code>.</p>
+</section>
+<section id="rubric-other-components" class="level2">
+<h2 class="anchored" data-anchor-id="rubric-other-components">Rubric: Other components</h2>
+<section id="video-recording" class="level3">
+<h3 class="anchored" data-anchor-id="video-recording">Video Recording</h3>
+<p>Make a video recording (probably using Zoom) demonstrating your interactive components. You should provide a quick explanation of your data and demonstrate some of the conclusions from your EDA. This video should be no longer than 4 minutes. Include a link to your video (and password if needed) in your README.md file on your Github repository. You are not required to provide a link on the website. This can be presented by any subset of the team members.</p>
+</section>
+<section id="rest-of-the-site" class="level3">
+<h3 class="anchored" data-anchor-id="rest-of-the-site">Rest of the Site</h3>
+<p>Finally, here are important things to keep in mind for the rest of the site.</p>
+<p>The main title of your page is informative. Each post has an author/description/informative title. All lab required posts are present. Each page (including the home page) has a nice featured image associated with it. Your about page is up to date and clean. You have removed the generic posts from the initial site template.</p>
 
-// Create dummy data. 
-// Replace this with your real data as needed.
-data = Array.from({length: 100}, (_, i) => {
-  return {
-    order: i + 1,
-    Estimate: Math.random(),  // Mean callback rate
-    race: Math.random() < 0.5 ? "Black" : "White",
-    gender: Math.random() < 0.5 ? "Male" : "Female",
-    firstname: String.fromCharCode(65 + Math.floor(Math.random() * 26))
-  }
-});
 
-// Create interactive dropdowns for race and gender.
-viewof race_filter = Inputs.select(["All", "Black", "White"], { label: "Select Race:" });
-viewof gender_filter = Inputs.select(["All", "Female", "Male"], { label: "Select Gender:" });
-
-// Create a cell that filters the data based on the selected inputs.
-filteredData = {
-  // Get the current input values.
-  const race = race_filter,
-        gender = gender_filter;
-  
-  // Filter the data.
-  return data.filter(d => (race === "All" || d.race === race)
-                        && (gender === "All" || d.gender === gender));
-}
-
-// Create the scatter plot using the filtered data.
-Plot.plot({
-  x: { label: "Applicant Order" },
-  y: { label: "Mean Callback Rate" },
-  marks: [
-    Plot.dot(filteredData, {
-      x: "order",
-      y: "Estimate",
-      fill: "race",  // Color by race (could also combine with gender)
-      title: d => `${d.firstname} (${d.gender})`
-    })
-  ],
-  width: 600,
-  height: 400
-})
-</script>
-</div>
-
-
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
