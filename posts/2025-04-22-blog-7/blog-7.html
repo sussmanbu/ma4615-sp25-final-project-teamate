@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="TEAMATE">
-<meta name="dcterms.date" content="2025-04-18">
+<meta name="dcterms.date" content="2025-04-22">
 <meta name="description" content="Description of datasets found.">
 
 <title>Blog 7: Interactive Analysis – MA [46]15 Final Project</title>
@@ -140,7 +140,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">April 18, 2025</p>
+        <p class="date">April 22, 2025</p>
       </div>
     </div>
     
@@ -159,67 +159,50 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>This post replicates the table 1 and 2 in the paper in R.</p>
-<p>Note: Experiment data is from 2019-2021, while census data is from 2019-2024. The following code aggregate application level data to the <strong>state</strong> level and merge it with the census data to calculate the proportion of applications by state.</p>
-<p>This exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.</p>
-<section id="interactive" class="level3">
-<h3 class="anchored" data-anchor-id="interactive">Interactive</h3>
-<p>Your Big Data page should also include a small interactive dashboard. The dashboard should be created either using Shinylive, as below. This interactive component should in some way support your thesis from your big picture page. Good interactives often provide both high-level understanding of the data while allowing a user to investigate specific scenarios, observations, subgroups, etc.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><iframe data-deferred-src="appcc317f17e436665a90414d399624143f/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
-</div>
-</div>
-<p>To get the shinylive-r working.</p>
-<ol type="1">
-<li>Make sure your shiny app works as a regular r chunk.</li>
-<li>Make sure that the chunk is completely self-contained. Meaning all packages and data are loaded inside that chunk. It can’t rely on any other chunks.</li>
-<li>For the data that you are using for shiny, copy the rds file or any other files into the scripts folder, and then publish your website.</li>
-<li>Where you load in your data, change it to use a URL to the data set which will now be on your website. Something like read_rds(“https://sussmanbu.github.io/ma-4615-fa24-final-project-group-a/scripts/dataset_for_shiny.rds”)</li>
-<li>Check that the chunk still works as a regular r chunk.</li>
-<li>Change it to a shinylive-r chunk.</li>
-<li>Commit and publish your work.</li>
-</ol>
-<p>I recommend keeping the data used for the shiny interactive relatively small, though this isn’t completely necessary.</p>
-<hr>
-</section>
-<section id="rubric-on-this-page" class="level2">
-<h2 class="anchored" data-anchor-id="rubric-on-this-page">Rubric: On this page</h2>
+<p>Key objectives:</p>
 <ul>
-<li>Title
-<ul>
-<li>Your big picture page should have a creative/click-bait-y title/headline that provides a hint about your thesis.</li>
-</ul></li>
-<li>Clarity of Explanation
-<ul>
-<li>You should have a clear thesis/goal for this page. What are you trying to show? Make sure that you explain your analysis in detail but don’t go into top much mathematics or statistics. The audience for this page is the general public (to the extent possible). Your thesis should be a statement, not a question.</li>
-<li>Each figure should be very polished and also not too complicated. There should be a clear interpretation of the figure so the figure has a clear purpose. Even something like a histogram can be difficult to interpret for non-experts.</li>
-</ul></li>
-<li>Creativity
-<ul>
-<li>Do your best to make things interesting. Think of a how a news article or a magazine story might draw you in. Think of how each part of your analysis supports the previous part or provides a different perspective.</li>
-</ul></li>
-<li>Interactive component
-<ul>
-<li>Quality and ease of use of the interactive components. Is it clear what can be explored using your interactive components? Does it enhance and reinforce your conclusions?</li>
-</ul></li>
-<li>This page should be self-contained.</li>
+<li><strong>High-level overview:</strong> Understand the names of the fake resumes and their callback rates.</li>
+<li><strong>Interactive deep dive:</strong> Allow users to explore naming patterns and callback rates by race and gender.</li>
 </ul>
-<p><strong>Note</strong>: This page should have no code visible, i.e.&nbsp;use <code>#| echo: FALSE</code>.</p>
-</section>
-<section id="rubric-other-components" class="level2">
-<h2 class="anchored" data-anchor-id="rubric-other-components">Rubric: Other components</h2>
-<section id="video-recording" class="level3">
-<h3 class="anchored" data-anchor-id="video-recording">Video Recording</h3>
-<p>Make a video recording (probably using Zoom) demonstrating your interactive components. You should provide a quick explanation of your data and demonstrate some of the conclusions from your EDA. This video should be no longer than 4 minutes. Include a link to your video (and password if needed) in your README.md file on your Github repository. You are not required to provide a link on the website. This can be presented by any subset of the team members.</p>
-</section>
-<section id="rest-of-the-site" class="level3">
-<h3 class="anchored" data-anchor-id="rest-of-the-site">Rest of the Site</h3>
-<p>Finally, here are important things to keep in mind for the rest of the site.</p>
-<p>The main title of your page is informative. Each post has an author/description/informative title. All lab required posts are present. Each page (including the home page) has a nice featured image associated with it. Your about page is up to date and clean. You have removed the generic posts from the initial site template.</p>
+<section id="interactive-dashboard" class="level3">
+<h3 class="anchored" data-anchor-id="interactive-dashboard">Interactive Dashboard</h3>
+<p>Below is a self-contained Shiny app chunk that will render directly in your Quarto site using <strong>shinylive</strong>.</p>
+<p><strong>Instructions:</strong><br>
+- 🔹 <em>Self-contained:</em> All libraries and data loading happen within this chunk.<br>
+- 🔹 <em>Small data:</em> The RDS file is hosted on GitHub Pages for fast loading.<br>
+- 🔹 <em>Embed:</em> Use <code>engine="shinylive-r"</code> and <code>standalone="true"</code> so Quarto knows to spin up a live Shiny session.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'shiny' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="cell-output-display">
+<p><iframe data-deferred-src="appf4672e37b0aac71e3b58bf1b9775768a/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+</div>
+</div>
+<hr>
+<p><strong>Deployment Notes:</strong><br>
+1. Confirm this chunk runs locally as a standard R chunk.<br>
+2. Place the RDS file in your <code>scripts/</code> folder and push to GitHub.<br>
+3. Update the <code>read_rds()</code> URL to point to your published <code>scripts/</code> location.<br>
+4. Change the chunk engine to <code>shinylive-r</code> and re-render the site.<br>
+5. Adjust <code>viewerHeight</code> as needed to fit your page layout.</p>
+<p>This interactive component complements the static analysis by letting readers examine names and callback patterns directly by subgroup.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
