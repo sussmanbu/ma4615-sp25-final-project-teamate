@@ -126,7 +126,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#interactive" id="toc-interactive" class="nav-link active" data-scroll-target="#interactive">Interactive</a></li>
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link active" data-scroll-target="#why-this-matters">Why this matters</a></li>
+  <li><a href="#what-we-did-on-this-page" id="toc-what-we-did-on-this-page" class="nav-link" data-scroll-target="#what-we-did-on-this-page">What we did on this page</a></li>
+  <li><a href="#explore-it-yourself" id="toc-explore-it-yourself" class="nav-link" data-scroll-target="#explore-it-yourself">Explore it yourself</a></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
   <li><a href="#rubric-other-components" id="toc-rubric-other-components" class="nav-link" data-scroll-target="#rubric-other-components">Rubric: Other components</a>
   <ul class="collapse">
@@ -165,24 +167,49 @@ ul.task-list li input[type="checkbox"] {
 
 <p><img src="images/The_Big_Picture_2.jpeg" class="img-fluid"></p>
 <p>This comes from the file <code>big_picture.qmd</code>.</p>
-<p>Think of this page as your 538/Upshot style article. This means that you should try to tell a story through the data and your analysis. Read articles from those sites and similar sites to get a feeling for what they are like. Try to write in the style of a news or popular article. Importantly, this page should be geared towards the general public. You shouldn’t assume the reader understands how to interpret a linear regression or a complicated plot. Focus on interpretation and visualizations.</p>
+<p><strong>How much does your name matter in landing an interview?</strong><br>
+In today’s competitive job market, a candidate’s name can be an unexpected gatekeeper. Resumes bearing names commonly associated with different racial or gender groups may receive different callback rates—even when qualifications are identical. That’s the hidden bias we set out to uncover.</p>
+<p><strong>Our thesis:</strong><br>
+Taste Based Discrimination in initial resume screening manifests in callback rates that vary systematically by race and gender of first names. By analyzing hundreds of thousands of fictitious job applications in a randomized experiment, we can both quantify these disparities and let readers explore them interactively.</p>
+<section id="why-this-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-this-matters">Why this matters</h3>
+<ul>
+<li><strong>Fairness in hiring:</strong> Early-stage screening should focus on qualifications, not perceived identity.<br>
+</li>
+<li><strong>Data-driven insight:</strong> Large-scale resume studies provide rigorous evidence, moving the conversation beyond anecdotes.<br>
+</li>
+<li><strong>Actionable takeaways:</strong> Organizations can monitor name-based disparities and design blind screening to reduce bias.</li>
+</ul>
+</section>
+<section id="what-we-did-on-this-page" class="level3">
+<h3 class="anchored" data-anchor-id="what-we-did-on-this-page">What we did on this page</h3>
+<ul>
+<li><strong>Descriptive analysis:</strong> Static charts show the overall spread of callback rates by race and gender groups.<br>
+</li>
+<li><strong>Interactive deep dive:</strong> This page embeds a small Shiny dashboard, letting you explore the most common first names by subgroup and see which names yield higher callback rates.</li>
+</ul>
 <hr>
-<section id="interactive" class="level3">
-<h3 class="anchored" data-anchor-id="interactive">Interactive</h3>
-<p>Your Big Data page should also include a small interactive dashboard. The dashboard should be created either using Shinylive, as below. This interactive component should in some way support your thesis from your big picture page. Good interactives often provide both high-level understanding of the data while allowing a user to investigate specific scenarios, observations, subgroups, etc.</p>
+</section>
+<section id="explore-it-yourself" class="level3">
+<h3 class="anchored" data-anchor-id="explore-it-yourself">Explore it yourself</h3>
+<p>The interactive below lets you select any racial group and gender to view:</p>
+<ul>
+<li>A <strong>word cloud</strong> of the top first names in that subgroup.<br>
+</li>
+<li>A <strong>table</strong> of the top names ranked by callback rate.</li>
+</ul>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
 #| eval: true
 #| standalone: true
-#| viewerHeight: 640 # You will have to adjust this to fit everything
+#| viewerHeight: 640
 # ```{shinylive-r} when ready to publish
 library(shiny)
 library(dplyr)
 library(readr)
 library(wordcloud2)
 library(stringdist)
-
 
 options("readr.edition" = 1) # keep this to ensure you can download the data
 data &lt;- read_rds("https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds")
@@ -206,7 +233,7 @@ ui &lt;- fluidPage(
   )
 )
 
-# Define server logic required to draw a histogram ----
+# Define server logic required to draw --
 server &lt;- function(input, output, session) {
   filtered_wc &lt;- reactive({
     req(input$race_wc, input$gender_wc)
