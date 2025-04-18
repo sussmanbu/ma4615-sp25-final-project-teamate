@@ -3,43 +3,104 @@ title: "Blog 7: Interactive Analysis"
 description: |
   Description of datasets found.
 author: "TEAMATE"
-date: "2025-04-18"
+date: "2025-04-22"
 draft: FALSE
-runtime: shiny
-execute:
-  echo: false
 ---
 
-This post replicates the table 1 and 2 in the paper in R.
+Key objectives:
 
-Note: Experiment data is from 2019-2021, while census data is from 2019-2024. The following code aggregate application level data to the **state** level and merge it with the census data to calculate the proportion of applications by state.
-
-This exercise will help us understand the background of the data on a state-by-state basis and explore the relationship between callback rates and other variables at the state level.
+- **High-level overview:** Understand the names of the fake resumes and their callback rates. 
+- **Interactive deep dive:** Allow users to explore naming patterns and callback rates by race and gender.
 
 ```{r}
+# Clear workspace
 rm(list = ls())
-# hide warnings
-# Clean the workspace and load packages.
-rm(list = ls())
-options(warn = -1)
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(stargazer))
-suppressPackageStartupMessages(library(readxl))
-suppressPackageStartupMessages(library(fixest))
-suppressPackageStartupMessages(library(usmap))
-suppressPackageStartupMessages(library(lfe))
-suppressPackageStartupMessages(library(lmtest))
-suppressPackageStartupMessages(library(sandwich))
-suppressPackageStartupMessages(library(multiwayvcov))
+```
 
+### Interactive Dashboard
+Below is a self-contained Shiny app chunk that will render directly in your Quarto site using **shinylive**.  
+
+**Instructions:**  
+- 🔹 *Self-contained:* All libraries and data loading happen within this chunk.  
+- 🔹 *Small data:* The RDS file is hosted on GitHub Pages for fast loading.  
+- 🔹 *Embed:* Use `engine="shinylive-r"` and `standalone="true"` so Quarto knows to spin up a live Shiny session.
+
+```{r}
 library(shiny)
 library(dplyr)
-library(ggplot2)
-library(lfe)
-library(tidyr)
+library(readr)
+library(wordcloud2)
+library(stringdist)
 
-# Load the cleaned data.
-data <- readRDS("dataset/cleaned_data.rds")
+
+data <- read_rds(
+  "https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds"
+)
+
+#-- UI definition -------------------------------------------------------------
+ui <- fluidPage(
+  titlePanel("Interactive Name Analysis Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      h4("Word Cloud Settings"),
+      # User selects race and gender to filter names
+      selectInput("race_wc",  "Select Race:",   choices = sort(unique(data$race)),   selected = "White"),
+      selectInput("gender_wc","Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
+    ),
+    mainPanel(
+      # Output: word cloud of top 100 first names
+      wordcloud2Output("name_wc", width = "100%", height = "600px"),
+      br(),
+      # Output: table of top callback-rate names
+      h4("Top Names by Callback Rate"),
+      tableOutput("top_callbacks")
+    )
+  )
+)
+
+#-- Server logic -------------------------------------------------------------
+server <- function(input, output, session) {
+  # Filter data by selected race & gender
+  filtered_wc <- reactive({
+    req(input$race_wc, input$gender_wc)
+    data %>% filter(race == input$race_wc, gender == input$gender_wc)
+  })
+
+  # Render word cloud: most common first names
+  output$name_wc <- renderWordcloud2({
+    filtered_wc() %>%
+      count(firstname) %>%
+      arrange(desc(n)) %>%
+      head(100) %>%
+      wordcloud2(size = 1)
+  })
+
+  # Render table: names ranked by callback rate
+  output$top_callbacks <- renderTable({
+    filtered_wc() %>%
+      group_by(firstname) %>%
+      summarise(
+        callback_rate = mean(cb, na.rm = TRUE),
+        count = n(),
+        .groups = 'drop'
+      ) %>%
+      arrange(desc(callback_rate), desc(count)) %>%
+      head(10)
+  }, rownames = FALSE)
+}
+
+# Launch Shiny app -----------------------------------------------------------
+shinyApp(ui, server)
 ```
+
+---  
+
+**Deployment tips:**  
+1. Confirm this chunk runs locally as a standard R chunk.  
+2. Place the RDS file in your `scripts/` folder and push to GitHub.  
+3. Update the `read_rds()` URL to point to your published `scripts/` location.  
+4. Change the chunk engine to `shinylive-r` and re-render the site.  
+5. Adjust `viewerHeight` as needed to fit your page layout.  
+
+This interactive component complements the static analysis by letting readers examine names and callback patterns directly by subgroup.  
+

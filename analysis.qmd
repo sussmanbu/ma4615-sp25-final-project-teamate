@@ -148,7 +148,7 @@ print(plot_A3, height = 5, width = 8)
 This figure shows mean contact rates by applicant first name, organized by race and gender group. The horizontal bars show race group mean contact rates.
 
 
-## Causal Effect of Taste Based Discrimination on Contact Rates
+## Effect of Taste Based Discrimination on Contact Rates
 
 Due to the nature of experimental data, we are able to estimate the causal effect of large employers' taste based discrimination on applicant labor market outcomes.
 

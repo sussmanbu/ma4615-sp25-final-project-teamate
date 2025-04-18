@@ -5,71 +5,108 @@ toc: true
 draft: FALSE
 filters:
   - shinylive
+editor: 
+  markdown: 
+    wrap: sentence
 ---
 
+# How much does your name matter in landing an interview?
 ![](images/The_Big_Picture_2.jpeg)
+
 
 This comes from the file `big_picture.qmd`.
 
-Think of this page as your 538/Upshot style article. This means that you should try to tell a story through the data and your analysis. Read articles from those sites and similar sites to get a feeling for what they are like. Try to write in the style of a news or popular article. Importantly, this page should be geared towards the general public. You shouldn't assume the reader understands how to interpret a linear regression or a complicated plot. Focus on interpretation and visualizations.
+In today’s competitive job market, a candidate’s name can be an unexpected gatekeeper.
+Resumes bearing names commonly associated with different racial or gender groups may receive different callback rates—even when qualifications are identical.
+That’s the hidden bias we set out to uncover.
 
+![](images/Sacred-Journey-MichaelReeder.png) \> Note: *Sacred Journey* by Michael Reeder
 
+**Our thesis:**\
+Taste Based Discrimination in initial resume screening manifests in callback rates that vary systematically by race and gender of first names.
+By analyzing hundreds of thousands of fictitious job applications in a randomized experiment, we can both quantify these disparities and let readers explore them interactively.
 
----
+### Why this matters
 
+-   **Fairness in hiring:** Early-stage screening should focus on qualifications, not perceived identity.\
+-   **Data-driven insight:** Large-scale resume studies provide rigorous evidence, moving the conversation beyond anecdotes.\
+-   **Actionable takeaways:** Organizations can monitor name-based disparities and design blind screening to reduce bias.
 
-### Interactive
+### What we did on this page
 
-Your Big Data page should also include a small interactive dashboard. The dashboard should be created either using Shinylive, as below. This interactive component should in some way support your thesis from your big picture page. Good interactives often provide both high-level understanding of the data while allowing a user to investigate specific scenarios, observations, subgroups, etc.
+-   **Descriptive analysis:** Static charts show the overall spread of callback rates by race and gender groups.\
+-   **Interactive deep dive:** This page embeds a small Shiny dashboard, letting you explore the most common first names by subgroup and see which names yield higher callback rates.
 
+------------------------------------------------------------------------
 
+### Explore it yourself
 
+The interactive below lets you select any racial group and gender to view:
 
-```{r}
-#| eval: false
+-   A **word cloud** of the top first names in that subgroup.\
+-   A **table** of the top names ranked by callback rate.
+
+```{shinylive-r}
+#| eval: true
 #| standalone: true
-#| viewerHeight: 640 # You will have to adjust this to fit everything
-
-
+#| viewerHeight: 640
+# ```{shinylive-r} when ready to publish
 library(shiny)
-library(tidyverse)
+library(dplyr)
+library(readr)
+library(wordcloud2)
+library(stringdist)
+
 options("readr.edition" = 1) # keep this to ensure you can download the data
+data <- read_rds("https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds")
 
 
-# Define UI for app that draws a histogram ----
+# Define UI for app
 ui <- fluidPage(
-
-  # App title ----
-  titlePanel("Hello Shiny!"),
-
-  # Sidebar layout with input and output definitions ----
-  verticalLayout(
-      # Input: Slider for the number of bins ----
-      sliderInput(inputId = "bins",
-                  label = "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30),
-
-      # Output: Histogram ----
-      plotOutput(outputId = "distPlot")
-
+  titlePanel("Interactive Name Analysis Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      h4("Word Cloud Settings"),
+      selectInput("race_wc", "Select Race:", choices = sort(unique(data$race)), selected = "White"),
+      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
+    ),
+    mainPanel(
+      wordcloud2Output("name_wc", width = "100%", height = "600px"),
+      br(),
+      h4("Top Names by Callback Rate"),
+      tableOutput("top_callbacks")
+    )
   )
 )
 
-# Define server logic required to draw a histogram ----
-server <- function(input, output) {
-  # The URL below has to point to a dataset on your github pages website
-  # I recommend creating a small-ish rds file that has only the data relevant to 
-  # the interactive.
-  data <- read_rds("https://sussmanbu.github.io/ma4615-final-project-quarto/dataset_for_shiny/combined_regional_data.rds")
-  
-  output$distPlot <- renderPlot({
-    ggplot(data, aes(x = refusal_rate)) +
-      geom_histogram(bins = input$bins + 1)
-
+# Define server logic required to draw --
+server <- function(input, output, session) {
+  filtered_wc <- reactive({
+    req(input$race_wc, input$gender_wc)
+    data %>% filter(race == input$race_wc, gender == input$gender_wc)
   })
 
+  
+  output$name_wc <- renderWordcloud2({
+    df <- filtered_wc() %>%
+      count(firstname) %>%
+      arrange(desc(n)) %>%
+      head(100)
+    wordcloud2(df, size = 1)
+  })
+
+
+  output$top_callbacks <- renderTable({
+    df <- filtered_wc() %>%
+      group_by(firstname) %>%
+      summarise(
+        callback_rate = mean(cb, na.rm = TRUE),
+        count = n()
+      ) %>%
+      arrange(desc(callback_rate), desc(count)) %>%
+      head(10)
+    df
+  }, rownames = FALSE)
 }
 
 # Create Shiny app ----
@@ -77,42 +114,33 @@ shinyApp(ui = ui, server = server)
 ```
 
 To get the shinylive-r working.
- 
-1. Make sure your shiny app works as a regular r chunk.
-2. Make sure that the chunk is completely self-contained. Meaning all packages and data are loaded inside that chunk. It can't rely on any other chunks.
-3. For the data that you are using for shiny, copy the rds file or any other files into the scripts folder, and then publish your website.
-4. Where you load in your data, change it to use a URL to the data set which will now be on your website. Something like read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-a/scripts/dataset_for_shiny.rds")
-5. Check that the chunk still works as a regular r chunk.
-6. Change it to a shinylive-r chunk.
-7. Commit and publish your work.
+
+1.  Make sure your shiny app works as a regular r chunk.
+2.  Make sure that the chunk is completely self-contained. Meaning all packages and data are loaded inside that chunk. It can't rely on any other chunks.
+3.  For the data that you are using for shiny, copy the rds file or any other files into the scripts folder, and then publish your website.
+4.  Where you load in your data, change it to use a URL to the data set which will now be on your website. Something like read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-a/scripts/dataset_for_shiny.rds")
+5.  Check that the chunk still works as a regular r chunk.
+6.  Change it to a shinylive-r chunk.
+7.  Commit and publish your work.
 
 I recommend keeping the data used for the shiny interactive relatively small, though this isn't completely necessary.
 
----
-
-
-
+------------------------------------------------------------------------
 
 ## Rubric: On this page
 
+-   Title
+    -   Your big picture page should have a creative/click-bait-y title/headline that provides a hint about your thesis.
+-   Clarity of Explanation
+    -   You should have a clear thesis/goal for this page. What are you trying to show? Make sure that you explain your analysis in detail but don't go into top much mathematics or statistics. The audience for this page is the general public (to the extent possible). Your thesis should be a statement, not a question.
+    -   Each figure should be very polished and also not too complicated. There should be a clear interpretation of the figure so the figure has a clear purpose. Even something like a histogram can be difficult to interpret for non-experts.
+-   Creativity
+    -   Do your best to make things interesting. Think of a how a news article or a magazine story might draw you in. Think of how each part of your analysis supports the previous part or provides a different perspective.
+-   Interactive component
+    -   Quality and ease of use of the interactive components. Is it clear what can be explored using your interactive components? Does it enhance and reinforce your conclusions?
+-   This page should be self-contained.
 
-* Title
-  * Your big picture page should have a creative/click-bait-y title/headline that provides a hint about your thesis.
-* Clarity of Explanation
-  * You should have a clear thesis/goal for this page. What are you trying to show? Make sure that you explain your analysis in detail but don't go into top much mathematics or statistics. The audience for this page is the general public (to the extent possible). Your thesis should be a statement, not a question.
-  * Each figure should be very polished and also not too complicated. There should be a clear interpretation of the figure so the figure has a clear purpose. Even something like a histogram can be difficult to interpret for non-experts.
-* Creativity
-  * Do your best to make things interesting. Think of a how a news article or a magazine story might draw you in. Think of how each part of your analysis supports the previous part or provides a different perspective.
-* Interactive component
-  * Quality and ease of use of the interactive components.
-Is it clear what can be explored using your interactive components?
-Does it enhance and reinforce your conclusions?
-* This page should be self-contained.
-  
-**Note**: This page should have no code visible, i.e. use `#| echo: FALSE`.  
-
-
-
+**Note**: This page should have no code visible, i.e. use `#| echo: FALSE`.
 
 ## Rubric: Other components
 
@@ -121,13 +149,13 @@ Does it enhance and reinforce your conclusions?
 Make a video recording (probably using Zoom) demonstrating your interactive components.
 You should provide a quick explanation of your data and demonstrate some of the conclusions from your EDA.
 This video should be no longer than 4 minutes.
-Include a link to your video (and password if needed) in your README.md file on your Github repository. You are not required to provide a link on the website.
+Include a link to your video (and password if needed) in your README.md file on your Github repository.
+You are not required to provide a link on the website.
 This can be presented by any subset of the team members.
-
 
 ### Rest of the Site
 
-Finally, here are important things to keep in mind for the rest of the site. 
+Finally, here are important things to keep in mind for the rest of the site.
 
 The main title of your page is informative.
 Each post has an author/description/informative title.
