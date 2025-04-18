@@ -294,6 +294,13 @@
     "text": "Acknowledgements\nThis is a course project for MA[46]15 Data Science with R at the Boston University. We thank Professor Daniel Sussman and TF Aislinn Sullivan for their guidance and support throughout the course. We also thank our classmates for their feedback. The content and assessments for this course have been modified as part of Boston University’s Designing Antiracist Curricula Fellowship.\n\n\nAbout this Template.\nThis is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463)."
   },
   {
+    "objectID": "big_picture.html",
+    "href": "big_picture.html",
+    "title": "Big Picture",
+    "section": "",
+    "text": "How much does your name matter in landing an interview?\nThis comes from the file big_picture.qmd.\nIn today’s competitive job market, a candidate’s name can be an unexpected gatekeeper. Resumes bearing names commonly associated with different racial or gender groups may receive different callback rates—even when qualifications are identical. That’s the hidden bias we set out to uncover.\n&gt; Note: Sacred Journey by Michael Reeder\nOur thesis:\nTaste Based Discrimination in initial resume screening manifests in callback rates that vary systematically by race and gender of first names. By analyzing hundreds of thousands of fictitious job applications in a randomized experiment, we can both quantify these disparities and let readers explore them interactively."
+  },
+  {
     "objectID": "big_picture.html#rubric-on-this-page",
     "href": "big_picture.html#rubric-on-this-page",
     "title": "Big Picture",
