@@ -10,9 +10,15 @@ editor:
     wrap: sentence
 ---
 
-# How much does your name matter in landing an interview?
+------------------------------------------------------------------------
+
+
+>How much does your name matter in landing an interview?
+
+
 ![](images/The_Big_Picture_2.jpeg)
 
+------------------------------------------------------------------------
 
 This comes from the file `big_picture.qmd`.
 

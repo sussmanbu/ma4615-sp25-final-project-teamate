@@ -23,77 +23,74 @@ Below is a self-contained Shiny app chunk that will render directly in your Quar
 **Instructions:**  
 - 🔹 *Self-contained:* All libraries and data loading happen within this chunk.  
 - 🔹 *Small data:* The RDS file is hosted on GitHub Pages for fast loading.  
-- 🔹 *Embed:* Use `engine="shinylive-r"` and `standalone="true"` so Quarto knows to spin up a live Shiny session.
+
 
 ```{r}
+#| eval: true
+#| standalone: true
+#| viewerHeight: 640
+# ```{shinylive-r} when ready to publish
 library(shiny)
 library(dplyr)
 library(readr)
 library(wordcloud2)
 library(stringdist)
 
+options("readr.edition" = 1) # keep this to ensure you can download the data
+data <- read_rds("https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds")
 
-data <- read_rds(
-  "https://sussmanbu.github.io/ma4615-sp25-final-project-teamate/dataset_for_shiny/cleaned_data.rds"
-)
 
-#-- UI definition -------------------------------------------------------------
+# Define UI for app
 ui <- fluidPage(
   titlePanel("Interactive Name Analysis Dashboard"),
   sidebarLayout(
     sidebarPanel(
       h4("Word Cloud Settings"),
-      # User selects race and gender to filter names
-      selectInput("race_wc",  "Select Race:",   choices = sort(unique(data$race)),   selected = "White"),
-      selectInput("gender_wc","Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
+      selectInput("race_wc", "Select Race:", choices = sort(unique(data$race)), selected = "White"),
+      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
     ),
     mainPanel(
-      # Output: word cloud of top 100 first names
       wordcloud2Output("name_wc", width = "100%", height = "600px"),
       br(),
-      # Output: table of top callback-rate names
       h4("Top Names by Callback Rate"),
       tableOutput("top_callbacks")
     )
   )
 )
 
-#-- Server logic -------------------------------------------------------------
+# Define server logic required to draw --
 server <- function(input, output, session) {
-  # Filter data by selected race & gender
   filtered_wc <- reactive({
     req(input$race_wc, input$gender_wc)
     data %>% filter(race == input$race_wc, gender == input$gender_wc)
   })
 
-  # Render word cloud: most common first names
+  
   output$name_wc <- renderWordcloud2({
-    filtered_wc() %>%
+    df <- filtered_wc() %>%
       count(firstname) %>%
       arrange(desc(n)) %>%
-      head(100) %>%
-      wordcloud2(size = 1)
+      head(100)
+    wordcloud2(df, size = 1)
   })
 
-  # Render table: names ranked by callback rate
+
   output$top_callbacks <- renderTable({
-    filtered_wc() %>%
+    df <- filtered_wc() %>%
       group_by(firstname) %>%
       summarise(
         callback_rate = mean(cb, na.rm = TRUE),
-        count = n(),
-        .groups = 'drop'
+        count = n()
       ) %>%
       arrange(desc(callback_rate), desc(count)) %>%
       head(10)
+    df
   }, rownames = FALSE)
 }
 
-# Launch Shiny app -----------------------------------------------------------
-shinyApp(ui, server)
+# Create Shiny app ----
+shinyApp(ui = ui, server = server)
 ```
-
----  
 
 **Deployment tips:**  
 1. Confirm this chunk runs locally as a standard R chunk.  

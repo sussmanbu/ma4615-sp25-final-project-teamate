@@ -12,11 +12,11 @@ This is a website for the final project for MA[46]15 Data Science with R by Team
 
 The members of this team are below.
 
-### Rheona Mehta
-Rheona is a junior studying Economics and Data Science. Github:  https://github.com/rhemehta
-
 ### [Zifan Huang](https://www.linkedin.com/in/zifan-huang/)
 Zifan is a senior studying economics. Github: https://github.com/zifan33
+
+### Rheona Mehta
+Rheona is a junior studying Economics and Data Science. Github:  https://github.com/rhemehta
 
 ### Catherine Liu
 Catherine is a junior studying computer science and mathematics. Github: https://github.com/catherinel04
