@@ -1,7 +1,7 @@
 ---
 title: "Blog 5: Geographic Analysis of Experiment and Census Data"
 description:  |
-  Description of datasets found.
+  Leverage Census data to check the geographical distribution of the experimental design..
 author: "TEAMATE"
 date: "2025-04-07"
 draft: FALSE

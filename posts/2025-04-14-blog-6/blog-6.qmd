@@ -1,7 +1,7 @@
 ---
 title: "Blog 6: Wrapping Up the Analysis"
 description:  |
-  Description of datasets found.
+  Wrapping up original analysis in the paper.
 author: "TEAMATE"
 date: "2025-04-016"
 draft: FALSE

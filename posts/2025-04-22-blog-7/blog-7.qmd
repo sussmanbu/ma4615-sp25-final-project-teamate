@@ -1,7 +1,7 @@
 ---
 title: "Blog 7: Interactive Analysis"
 description: |
-  Description of datasets found.
+  A self-contained Shiny app.
 author: "TEAMATE"
 date: "2025-04-22"
 draft: FALSE
@@ -18,7 +18,7 @@ rm(list = ls())
 ```
 
 ### Interactive Dashboard
-Below is a self-contained Shiny app chunk that will render directly in your Quarto site using **shinylive**.  
+Below is a self-contained Shiny app using **shinylive**.  
 
 **Instructions:**  
 - 🔹 *Self-contained:* All libraries and data loading happen within this chunk.  

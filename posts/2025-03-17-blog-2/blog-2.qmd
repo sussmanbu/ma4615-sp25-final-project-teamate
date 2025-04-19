@@ -1,7 +1,7 @@
 ---
 title: "Blog 2: Data Loading, Cleaning, and Diagnostic Plots"
 description:  |
-  Description of datasets found.
+  This blog shows the background of our data and how we visualize it.
 author: "TEAMATE"
 date: "2025-03-17"
 draft: FALSE

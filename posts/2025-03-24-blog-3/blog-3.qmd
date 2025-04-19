@@ -1,7 +1,7 @@
 ---
 title: "Blog 3: Extended Analysis and Equity Considerations"
 description:  |
-  Description of datasets found.
+  Preliminary data exploration and explore the structure of the data.
 author: "TEAMATE"
 date: "2025-03-24"
 draft: FALSE

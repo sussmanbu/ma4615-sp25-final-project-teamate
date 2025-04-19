@@ -10,13 +10,16 @@ editor:
     wrap: sentence
 ---
 
-------------------------------------------------------------------------
 
 
->How much does your name matter in landing an interview?
+>How much does your identity matter in landing an interview?
 
+Media coverage of this study by Kline, Rose, and Walters, 2022:\
+[New York Times](https://www.nytimes.com/2021/07/29/business/economy/hiring-racial-discrimination.html) \
+[Marketplace](https://www.marketplace.org/episode/2021/08/03/research-spotlights-existence-of-racial-discrimination-in-hiring-process) \
+[Here & Now](https://www.wbur.org/hereandnow/2021/08/18/name-discrimination-jobs) \
+[Youtube Channel: econimate](https://www.youtube.com/watch?v=fLgWIyx0gDw) \
 
-![](images/The_Big_Picture_2.jpeg)
 
 ------------------------------------------------------------------------
 
@@ -26,10 +29,10 @@ In today’s competitive job market, a candidate’s name can be an unexpected g
 Resumes bearing names commonly associated with different racial or gender groups may receive different callback rates—even when qualifications are identical.
 That’s the hidden bias we set out to uncover.
 
-![](images/Sacred-Journey-MichaelReeder.png) \> Note: *Sacred Journey* by Michael Reeder
+![](images/Sacred-Journey-MichaelReeder.png) \> Note: *Sacred Journey* by Michael Reeder: An Art Piece that represents the journey of self-discovery and identity.
 
-**Our thesis:**\
-Taste Based Discrimination in initial resume screening manifests in callback rates that vary systematically by race and gender of first names.
+**Thesis:**\
+[Taste-based Discrimination](https://en.wikipedia.org/wiki/Taste-based_discrimination) in initial resume screening manifests in callback rates that vary systematically by race and gender of first names.
 By analyzing hundreds of thousands of fictitious job applications in a randomized experiment, we can both quantify these disparities and let readers explore them interactively.
 
 ### Why this matters

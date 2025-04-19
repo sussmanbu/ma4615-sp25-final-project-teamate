@@ -1,7 +1,7 @@
 ---
 title: "Blog 4: Extended Statistical Modeling"
 description:  |
-  Description of datasets found.
+  Apply some statistical modeling to our data.
 author: "TEAMATE"
 date: "2025-03-31"
 draft: FALSE
