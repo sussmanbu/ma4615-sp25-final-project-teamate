@@ -160,12 +160,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#research-questions" id="toc-research-questions" class="nav-link" data-scroll-target="#research-questions">Research Questions</a></li>
   <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics">Summary Statistics</a></li>
   <li><a href="#descriptive-evidence-by-applicants-first-name" id="toc-descriptive-evidence-by-applicants-first-name" class="nav-link" data-scroll-target="#descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</a></li>
-  <li><a href="#effect-of-taste-based-discrimination-on-contact-rates" id="toc-effect-of-taste-based-discrimination-on-contact-rates" class="nav-link" data-scroll-target="#effect-of-taste-based-discrimination-on-contact-rates">Effect of Taste Based Discrimination on Contact Rates</a>
+  <li><a href="#effect-of-taste-based-discrimination-on-contact-rates" id="toc-effect-of-taste-based-discrimination-on-contact-rates" class="nav-link" data-scroll-target="#effect-of-taste-based-discrimination-on-contact-rates">Effect of Taste-Based Discrimination on Contact Rates</a>
   <ul class="collapse">
   <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification">Model Specification</a></li>
   <li><a href="#visualization-of-ols-estimates" id="toc-visualization-of-ols-estimates" class="nav-link" data-scroll-target="#visualization-of-ols-estimates">Visualization of OLS Estimates</a></li>
   </ul></li>
   <li><a href="#heterogeneity-analysis" id="toc-heterogeneity-analysis" class="nav-link" data-scroll-target="#heterogeneity-analysis">Heterogeneity Analysis</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
+  <ul class="collapse">
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
+  </ul></li>
   <li><a href="#note-on-attribution" id="toc-note-on-attribution" class="nav-link" data-scroll-target="#note-on-attribution">Note on Attribution</a></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
   </ul>
@@ -238,9 +242,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Despite decades of regulatory and legal efforts to eliminate hiring discrimination, numerous field experiments continue to document persistent gaps in employer callback rates by race. In the study by <a href="https://ekrose.github.io/files/randres.pdf">Rose et al.&nbsp;(2022)</a>, the large scale fake resume experiment among the Fortune 500 firms in the US enables us to investigate the extent of taste based discrimination in hiring practices.</p>
-<p>In a nutshell, the study sends fake resumes with randomly assigned characteristics to entry level positions among large U.S employers. This is an example of how a sample of resumes looks like:</p>
-<p><img src="images/example-resume.png" class="img-fluid"></p>
+<p>Despite decades of regulatory and legal efforts to eliminate hiring discrimination, numerous field experiments continue to document persistent gaps in employer callback rates by race. In the study by <a href="https://ekrose.github.io/files/randres.pdf">Rose et al.&nbsp;(2022)</a>, the large-scale fake resume experiment among Fortune 500 firms in the US enables us to investigate the extent of taste-based discrimination in hiring practices.</p>
+<p>In a nutshell, the study sends fake resumes with randomly assigned characteristics to entry-level positions among large U.S. employers. This is an example of how a sample of resumes looks like: <img src="images/example-resume.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p><strong>Note:</strong> sourced from Figure A1: Examples of applicant resumes in the Rose et al.&nbsp;(2022) paper.</p>
 </blockquote>
@@ -251,11 +254,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>Correlation does not imply causation.</p>
 </blockquote>
-<p>This is especially true when it comes to the dialogue of racial disparity from the data-driven point of view. In the previous correlation based analysis, the discrimination gap may be mis-specified due to omitted variable bias (OVB). For instance, instead of taste-based discrimination, the labor market outcome inequality may be driven by different level of educational attainment, work experience, or other factors that are not controlled for.</p>
+<p>This is especially true when it comes to the dialogue of racial disparity from a data-driven point of view. In the previous correlation-based analysis, the discrimination gap may have been misspecified due to omitted variable bias (OVB). For instance, instead of taste-based discrimination, labor market outcome inequality may be driven by different levels of educational attainment, work experience, or other factors that are not controlled for.</p>
 <p>This analysis leverages the powerful experimental data and codes from the Rose et al.&nbsp;(2022) paper to estimate the causal impact of being Black on the probability of receiving a callback.</p>
 <p>The analysis is based on the following research questions:</p>
 <ol type="1">
-<li><strong>Does tasted based discrimination cause differential labor market outcome in the U.S?</strong></li>
+<li><strong>Does tasted-based discrimination cause differential labor market outcomes in the U.S?</strong></li>
 </ol>
 <ul>
 <li>If so, how large is the magnitude?</li>
@@ -296,23 +299,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="aynnemqfup" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#aynnemqfup table {
+<div id="chhgwynils" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#chhgwynils table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#aynnemqfup thead, #aynnemqfup tbody, #aynnemqfup tfoot, #aynnemqfup tr, #aynnemqfup td, #aynnemqfup th {
+#chhgwynils thead, #chhgwynils tbody, #chhgwynils tfoot, #chhgwynils tr, #chhgwynils td, #chhgwynils th {
   border-style: none;
 }
 
-#aynnemqfup p {
+#chhgwynils p {
   margin: 0;
   padding: 0;
 }
 
-#aynnemqfup .gt_table {
+#chhgwynils .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -338,12 +341,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_caption {
+#chhgwynils .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#aynnemqfup .gt_title {
+#chhgwynils .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -355,7 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#aynnemqfup .gt_subtitle {
+#chhgwynils .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -367,7 +370,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#aynnemqfup .gt_heading {
+#chhgwynils .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -379,13 +382,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_bottom_border {
+#chhgwynils .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_col_headings {
+#chhgwynils .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -400,7 +403,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_col_heading {
+#chhgwynils .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -420,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#aynnemqfup .gt_column_spanner_outer {
+#chhgwynils .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -432,15 +435,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#aynnemqfup .gt_column_spanner_outer:first-child {
+#chhgwynils .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#aynnemqfup .gt_column_spanner_outer:last-child {
+#chhgwynils .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#aynnemqfup .gt_column_spanner {
+#chhgwynils .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -452,11 +455,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#aynnemqfup .gt_spanner_row {
+#chhgwynils .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#aynnemqfup .gt_group_heading {
+#chhgwynils .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -482,7 +485,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#aynnemqfup .gt_empty_group_heading {
+#chhgwynils .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -497,15 +500,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#aynnemqfup .gt_from_md > :first-child {
+#chhgwynils .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#aynnemqfup .gt_from_md > :last-child {
+#chhgwynils .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#aynnemqfup .gt_row {
+#chhgwynils .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -524,7 +527,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#aynnemqfup .gt_stub {
+#chhgwynils .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -537,7 +540,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aynnemqfup .gt_stub_row_group {
+#chhgwynils .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -551,15 +554,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#aynnemqfup .gt_row_group_first td {
+#chhgwynils .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#aynnemqfup .gt_row_group_first th {
+#chhgwynils .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#aynnemqfup .gt_summary_row {
+#chhgwynils .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -569,16 +572,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aynnemqfup .gt_first_summary_row {
+#chhgwynils .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_first_summary_row.thick {
+#chhgwynils .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#aynnemqfup .gt_last_summary_row {
+#chhgwynils .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -588,7 +591,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_grand_summary_row {
+#chhgwynils .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -598,7 +601,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aynnemqfup .gt_first_grand_summary_row {
+#chhgwynils .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -608,7 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_last_grand_summary_row_top {
+#chhgwynils .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -618,11 +621,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_striped {
+#chhgwynils .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#aynnemqfup .gt_table_body {
+#chhgwynils .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -631,7 +634,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_footnotes {
+#chhgwynils .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -645,7 +648,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_footnote {
+#chhgwynils .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -654,7 +657,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aynnemqfup .gt_sourcenotes {
+#chhgwynils .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -668,7 +671,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aynnemqfup .gt_sourcenote {
+#chhgwynils .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -676,72 +679,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aynnemqfup .gt_left {
+#chhgwynils .gt_left {
   text-align: left;
 }
 
-#aynnemqfup .gt_center {
+#chhgwynils .gt_center {
   text-align: center;
 }
 
-#aynnemqfup .gt_right {
+#chhgwynils .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#aynnemqfup .gt_font_normal {
+#chhgwynils .gt_font_normal {
   font-weight: normal;
 }
 
-#aynnemqfup .gt_font_bold {
+#chhgwynils .gt_font_bold {
   font-weight: bold;
 }
 
-#aynnemqfup .gt_font_italic {
+#chhgwynils .gt_font_italic {
   font-style: italic;
 }
 
-#aynnemqfup .gt_super {
+#chhgwynils .gt_super {
   font-size: 65%;
 }
 
-#aynnemqfup .gt_footnote_marks {
+#chhgwynils .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#aynnemqfup .gt_asterisk {
+#chhgwynils .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#aynnemqfup .gt_indent_1 {
+#chhgwynils .gt_indent_1 {
   text-indent: 5px;
 }
 
-#aynnemqfup .gt_indent_2 {
+#chhgwynils .gt_indent_2 {
   text-indent: 10px;
 }
 
-#aynnemqfup .gt_indent_3 {
+#chhgwynils .gt_indent_3 {
   text-indent: 15px;
 }
 
-#aynnemqfup .gt_indent_4 {
+#chhgwynils .gt_indent_4 {
   text-indent: 20px;
 }
 
-#aynnemqfup .gt_indent_5 {
+#chhgwynils .gt_indent_5 {
   text-indent: 25px;
 }
 
-#aynnemqfup .katex-display {
+#chhgwynils .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#aynnemqfup div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#chhgwynils div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -807,6 +810,7 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </div>
 </div>
 </div>
+<p>The first panel (“All Firms”) shows that Black applicants receive any form of contact in 22 percent of applications versus 23 percent for White applicants—a modest raw gap. When we restrict to the “Balanced” sample, the disparity widens: 23 percent versus 26 percent. Similar patterns hold for voicemails (17% vs 19%) and email/text contacts. These descriptive gaps motivate our causal estimation below and suggest that, even with the same pool of job postings, Black applicants face lower call‑back rates across multiple channels.</p>
 </section>
 <section id="descriptive-evidence-by-applicants-first-name" class="level2">
 <h2 class="anchored" data-anchor-id="descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</h2>
@@ -852,11 +856,11 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </div>
 </div>
 </div>
-<p>This figure shows mean contact rates by applicant first name, organized by race and gender group. The horizontal bars show race group mean contact rates.</p>
+<p>This figure shows mean contact rates by applicant first name, organized by race and gender group. The horizontal bars show race group mean contact rates. We can see that, on average, black names receive fewer 30-day callbacks than white names.</p>
 </section>
 <section id="effect-of-taste-based-discrimination-on-contact-rates" class="level2">
-<h2 class="anchored" data-anchor-id="effect-of-taste-based-discrimination-on-contact-rates">Effect of Taste Based Discrimination on Contact Rates</h2>
-<p>Due to the nature of experimental data, we are able to estimate the causal effect of large employers’ taste based discrimination on applicant labor market outcomes.</p>
+<h2 class="anchored" data-anchor-id="effect-of-taste-based-discrimination-on-contact-rates">Effect of Taste-Based Discrimination on Contact Rates</h2>
+<p>Due to the nature of experimental data, we can estimate the causal effect of large employers’ taste-based discrimination on applicant labor market outcomes.</p>
 <section id="model-specification" class="level3">
 <h3 class="anchored" data-anchor-id="model-specification">Model Specification</h3>
 <p>The code estimates the causal effect of being Black on the probability of receiving a callback, controlling for a vector of other resume characteristics. Formally, two specifications:</p>
@@ -865,16 +869,16 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </ol>
 <ul>
 <li>with controls for all sample</li>
-<li>with controls for balanced sample</li>
+<li>with controls for a balanced sample</li>
 <li>two-way fixed effects for all sample</li>
-<li>two-way fixed effects for balanced sample</li>
+<li>two-way fixed effects for a balanced sample</li>
 </ul>
 <ol start="2" type="1">
 <li><strong>Logistic regression</strong></li>
 </ol>
 <ul>
 <li>with controls for all sample</li>
-<li>with controls for balanced sample</li>
+<li>with controls for a balanced sample</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
@@ -1315,6 +1319,10 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </tr>
 </tbody>
 </table>
+<p>Across all specifications, the coefficient on Black is consistently negative and highly significant. In the simplest linear probability model (column 1), being Black reduces the probability of any callback by about 2.1 percentage points (SE=0.3pp). When we add firm and month fixed effects (column 2), the gap narrows only slightly to 2.0 pp, indicating that sorting of Black resumes into “easier” or “tougher” firms/months accounts for very little of the raw disparity. In the balanced‐sample OLS (column 5), the Black penalty is essentially unchanged at 2.2 pp.&nbsp;The corresponding logistic regressions (columns 3 and 6) imply a roughly 11–12 percent reduction in the odds of callback for Black applicants, again robust to fixed effects and sample restrictions.</p>
+<p>Among the other resume traits, Over 40 exhibits a modest negative effect in the unrestricted sample (–0.6 pp) but loses significance in the balanced sample. Gender itself (Female) has no discernible callback penalty or bonus. Signals like political, academic, or LGBTQ club affiliations never reach conventional significance, nor does holding an associate degree. Interestingly, the use of same‑gender pronouns on the résumé is associated with a small but borderline significant callback penalty in the basic models (–1.4 pp), and the neutral‑pronoun penalty becomes significant in the balanced OLS (–1.7 pp). This hints that nontraditional pronoun signaling may carry a slight cost in this context, though the effect sizes are small relative to the race gap.</p>
+<p>The model fit remains modest: R² climbs from just 2.4 percent without fixed effects to about 15 percent once we absorb firm‐and‐month variation, underscoring that much of the callback decision is driven by idiosyncratic job‐level factors and unobserved employer preferences. All standard errors are clustered at the job level, and the F‑statistics confirm the joint significance of the regressors.</p>
+<p><em>Key takeaway</em> : Even after controlling for a broad vector of resume characteristics and accounting for firm/month heterogeneity, Black applicants face a persistent 2pp lower callback rate—roughly a 12 percent relative penalty—highlighting taste‑based discrimination in large‑firm hiring.</p>
 </section>
 <section id="visualization-of-ols-estimates" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-of-ols-estimates">Visualization of OLS Estimates</h3>
@@ -1381,6 +1389,7 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </div>
 </div>
 </div>
+<p>We can observe that the coefficient estimates for the Black variable are negative and significant across all samples since the 95% confidence intervals do not include 0. Also, gender-neutral pronoun estimates are significant in the balanced sample.</p>
 </section>
 </section>
 <section id="heterogeneity-analysis" class="level2">
@@ -1478,6 +1487,20 @@ N = 32,703<span class="gt_footnote_marks" style="white-space:nowrap;font-style:i
 </div>
 </div>
 </div>
+<p>Although we don’t find a significant gender penalty in the baseline model, the black-female interaction remains significant across sample restrictions, indicating that Black women experience an extra callback penalty beyond what the additive race and gender effects predict.</p>
+<p>The interaction term between Black and gender‑neutral pronouns is also significant in the balanced sample. In other words, Black applicants who include gender‑neutral pronouns on their résumé face an additional callback penalty.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This analysis leverages a large-scale résumé audit experiment to estimate the causal effect of race on callback rates at Fortune 500 firms. Across all linear probability and logit specifications—both unrestricted and balanced samples—being Black reduces the probability of any form of contact by roughly <strong>2&nbsp;percentage points</strong> (≈ 11–12 percent relative penalty), a gap that remains unchanged once we absorb firm and month fixed effects.</p>
+<p>Pronoun usage carries a small penalty, and in the balanced sample the <strong>Black&nbsp;×&nbsp;Gender‑Neutral Pronouns</strong> and <strong>Black&nbsp;×&nbsp;Female</strong> interaction are also significant, indicating an extra penalty for Black applicants who signal intersecionality.</p>
+<hr>
+<section id="limitations" class="level3">
+<h3 class="anchored" data-anchor-id="limitations">Limitations</h3>
+<ul>
+<li><strong>External validity:</strong> Firms in the Fortune 500 may not reflect smaller or mid‑sized employers’ behavior. The generalizability of these results to other sectors or regions is uncertain. Future work could extend this analysis to a broader set of firms, including smaller employers or those in different industries.</li>
+</ul>
+</section>
 </section>
 <section id="note-on-attribution" class="level2">
 <h2 class="anchored" data-anchor-id="note-on-attribution">Note on Attribution</h2>
