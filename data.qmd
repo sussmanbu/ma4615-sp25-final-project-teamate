@@ -77,7 +77,7 @@ Below are some initial diagnostic plots generated from the cleaned dataset.
 
 ### Importing the Cleaned Data
 
-```{r, echo=FALSE}
+```{r}
 rm(list = ls())
 # hide warnings
 options(warn = -1)
