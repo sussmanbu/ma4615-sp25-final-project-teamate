@@ -128,7 +128,11 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link active" data-scroll-target="#why-this-matters">Why this matters</a></li>
   <li><a href="#what-we-did-on-this-page" id="toc-what-we-did-on-this-page" class="nav-link" data-scroll-target="#what-we-did-on-this-page">What we did on this page</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
+  <ul class="collapse">
   <li><a href="#explore-it-yourself" id="toc-explore-it-yourself" class="nav-link" data-scroll-target="#explore-it-yourself">Explore it yourself</a></li>
+  </ul></li>
+  <li><a href="#descriptive-evidence-by-applicants-first-name" id="toc-descriptive-evidence-by-applicants-first-name" class="nav-link" data-scroll-target="#descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</a></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
   <li><a href="#rubric-other-components" id="toc-rubric-other-components" class="nav-link" data-scroll-target="#rubric-other-components">Rubric: Other components</a>
   <ul class="collapse">
@@ -176,7 +180,9 @@ ul.task-list li input[type="checkbox"] {
 </p>
 <hr>
 <p>This comes from the file <code>big_picture.qmd</code>.</p>
-<p>In today’s competitive job market, a candidate’s name can be an unexpected gatekeeper. Resumes bearing names commonly associated with different racial or gender groups may receive different callback rates—even when qualifications are identical. That’s the hidden bias we set out to uncover.</p>
+<p>In today’s competitive job market, a candidate’s name can be an unexpected gatekeeper.</p>
+<p>Resumes bearing names commonly associated with different racial or gender groups may receive different callback rates—even when qualifications are identical.</p>
+<p>That’s the hidden bias we set out to uncover.</p>
 <p><img src="images/Sacred-Journey-MichaelReeder.png" class="img-fluid"> &gt; Note: <em>Sacred Journey</em> by Michael Reeder: An Art Piece that represents the journey of self-discovery and identity.</p>
 <p><strong>Thesis:</strong><br>
 <a href="https://en.wikipedia.org/wiki/Taste-based_discrimination">Taste-based Discrimination</a> in initial resume screening manifests in callback rates that vary systematically by race and gender of first names. By analyzing hundreds of thousands of fictitious job applications in a randomized experiment, we can both quantify these disparities and let readers explore them interactively.</p>
@@ -197,8 +203,19 @@ ul.task-list li input[type="checkbox"] {
 </li>
 <li><strong>Interactive deep dive:</strong> This page embeds a small Shiny dashboard, letting you explore the most common first names by subgroup and see which names yield higher callback rates.</li>
 </ul>
-<hr>
 </section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>We used data from the study <em>“Systemic Discrimination Among Large U.S. Employers”</em> by Kline, Rose, and Walters (2022). The study examines discrimination in hiring practices through a large-scale correspondence experiment. Key aspects of the study include:</p>
+<ul>
+<li><p>sending over 84,000 fictitious applications to over 100 Fortune 500 firms across multiple waves (including during the COVID pandemic).</p></li>
+<li><p>The data is used to measure systemic discrimination, a term defined by patterns or practices with a broad impact on an industry or geographic area, and to provide actionable intelligence for policy enforcement (e.g., EEOC investigations).</p></li>
+</ul>
+<p>This is an example of how a sample of resumes looks like: <img src="images/example-resume.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> sourced from Figure A1: Examples of applicant resumes in the Rose et al.&nbsp;(2022) paper.</p>
+</blockquote>
+<hr>
 <section id="explore-it-yourself" class="level3">
 <h3 class="anchored" data-anchor-id="explore-it-yourself">Explore it yourself</h3>
 <p>The interactive below lets you select any racial group and gender to view:</p>
@@ -231,13 +248,13 @@ ui &lt;- fluidPage(
     sidebarPanel(
       h4("Word Cloud Settings"),
       selectInput("race_wc", "Select Race:", choices = sort(unique(data$race)), selected = "White"),
-      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
-    ),
-    mainPanel(
-      wordcloud2Output("name_wc", width = "100%", height = "600px"),
+      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1]),
       br(),
       h4("Top Names by Callback Rate"),
       tableOutput("top_callbacks")
+    ),
+    mainPanel(
+      wordcloud2Output("name_wc", width = "100%", height = "600px")
     )
   )
 )
@@ -255,6 +272,8 @@ server &lt;- function(input, output, session) {
       count(firstname) %&gt;%
       arrange(desc(n)) %&gt;%
       head(100)
+    
+    set.seed(123)
     wordcloud2(df, size = 1)
   })
 
@@ -263,10 +282,12 @@ server &lt;- function(input, output, session) {
     df &lt;- filtered_wc() %&gt;%
       group_by(firstname) %&gt;%
       summarise(
-        callback_rate = mean(cb, na.rm = TRUE),
-        count = n()
+        callback_rate = mean(cb, na.rm = TRUE)#,
+        #count = n()
       ) %&gt;%
-      arrange(desc(callback_rate), desc(count)) %&gt;%
+      arrange(desc(callback_rate), 
+              #desc(count)
+              ) %&gt;%
       head(10)
     df
   }, rownames = FALSE)
@@ -274,6 +295,12 @@ server &lt;- function(input, output, session) {
 
 # Create Shiny app ----
 shinyApp(ui = ui, server = server)</code></pre>
+</section>
+</section>
+<section id="descriptive-evidence-by-applicants-first-name" class="level2">
+<h2 class="anchored" data-anchor-id="descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</h2>
+<p><img src="output/plot_A4.png" class="img-fluid"></p>
+<p>This figure shows mean contact rates by applicant first name, organized by race group. The horizontal bars show race group mean contact rates. We can see that, on average, black names receive fewer 30-day callbacks than white names.</p>
 <p>To get the shinylive-r working.</p>
 <ol type="1">
 <li>Make sure your shiny app works as a regular r chunk.</li>
