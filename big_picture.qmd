@@ -77,13 +77,13 @@ ui <- fluidPage(
     sidebarPanel(
       h4("Word Cloud Settings"),
       selectInput("race_wc", "Select Race:", choices = sort(unique(data$race)), selected = "White"),
-      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1])
-    ),
-    mainPanel(
-      wordcloud2Output("name_wc", width = "100%", height = "600px"),
+      selectInput("gender_wc", "Select Gender:", choices = sort(unique(data$gender)), selected = unique(data$gender)[1]),
       br(),
       h4("Top Names by Callback Rate"),
       tableOutput("top_callbacks")
+    ),
+    mainPanel(
+      wordcloud2Output("name_wc", width = "100%", height = "600px")
     )
   )
 )
@@ -101,6 +101,8 @@ server <- function(input, output, session) {
       count(firstname) %>%
       arrange(desc(n)) %>%
       head(100)
+    
+    set.seed(123)
     wordcloud2(df, size = 1)
   })
 

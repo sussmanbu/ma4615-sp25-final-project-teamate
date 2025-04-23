@@ -23,7 +23,7 @@ Code Reference:
 
 ## Loading data
 
-```{r}
+```{r echo=FALSE}
 rm(list = ls())
 # hide warnings
 options(warn = -1)
@@ -83,7 +83,7 @@ The analysis is based on the following research questions:
 
 
 ## Summary Statistics
-```{r}
+```{r echo=FALSE}
 data2 <- data %>%
   filter(balanced >= 0) %>% 
   mutate(
@@ -111,7 +111,7 @@ The first panel (“All Firms”) shows that Black applicants receive any form o
 
 
 ## Descriptive Evidence by Applicants First Name 
-```{r}
+```{r echo=FALSE}
 df <- data
 ols <- felm(cb ~ black + white - 1|0|0|job_id, data = df)
 ols2 <- felm(cb ~ factor(firstname) - 1|0|0|job_id, data = df)
@@ -172,7 +172,7 @@ The code estimates the causal effect of being Black on the probability of receiv
 - with controls for a balanced sample
 
 
-```{r}
+```{r echo=FALSE}
 data <- data %>%
   mutate(
     submitted_date = as.Date(submitted_date) 
@@ -229,7 +229,7 @@ logit_all_coefs <- coeftest(fit_logit_all, vcov = cl_vcov_logit_all)
 
 ```
 
-```{r}
+```{r echo=FALSE}
 # (LPM) for balanced sample
 fit_lpm_bal <- lm(reg_formula, data = data_bal)
 cl_vcov_bal <- cluster.vcov(fit_lpm_bal, data_bal$job_id)
@@ -254,7 +254,7 @@ logit_bal_coefs <- coeftest(fit_logit_bal, vcov = cl_vcov_logit_bal)
 #print(logit_bal_coefs)
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE echo=FALSE}
 models <- list(
   fit_lpm_all,        # simple LPM, All
   fit_lpm_all_lm_fe,  # LPM + firm & month FE, All
@@ -308,7 +308,7 @@ The model fit remains modest: R² climbs from just 2.4 percent without fixed eff
 *Key takeaway* : Even after controlling for a broad vector of resume characteristics and accounting for firm/month heterogeneity, Black applicants face a persistent 2pp lower callback rate—roughly a 12 percent relative penalty—highlighting taste‑based discrimination in large‑firm hiring.
 
 ### Visualization of OLS Estimates
-```{r}
+```{r echo=FALSE}
 term_labels <- c(
   black                   = "Black",
   female                  = "Female",
@@ -371,7 +371,7 @@ We can observe that the coefficient estimates for the Black variable are negativ
 
 In this section, we use **interaction terms** to explore how the effect of being Black on labor market outcomes varies across different characteristics of the resumes.
 
-```{r}
+```{r echo=FALSE}
 vars <- c(
   "female",
   "over40",
