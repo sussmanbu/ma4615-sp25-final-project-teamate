@@ -213,6 +213,7 @@ plot_A4 <- ggplot(data = coef,
 
 print(plot_A4, height = 5, width = 8)
 
+ggsave(plot_A4, filename = "output/plot_A4.png", height = 5, width = 8)
 ```
 
 This figure shows mean contact rates by applicant last name, organized by race. The horizontal bars show race group mean contact rates. F-tests and p-values come from joint tests of the hypothesis that contact rates are equal across names separately by race.
