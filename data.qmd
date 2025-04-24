@@ -95,6 +95,7 @@ merged_data <- readRDS("dataset/merged_data_state_by_year.rds")
 ```{r, echo=FALSE}
 boxplot(data$age_at_sub, main = "Age at Submission")
 ```
+As defined by the authors, the age is uniformly distributed between 20 and 60. This plot confirms that there are no outliers in the age variable.
 
 ### Check distribution of submissions throughout years
 
@@ -113,6 +114,10 @@ ggplot(data, aes(x = month)) +
   theme(axis.text.x = element_text(angle = 45)) +
   facet_grid(~year)
 ```
+This histogram shows the distribution of applications by month and year. The data is aggregated by month and year, allowing us to see trends over time. Notably, data from 2020 March to June is missing, likely due to the COVID-19 pandemic. January 2021 shows the distribution mode, with a significant number of applications submitted during that month.
+
+This histogram legitimizes the necessity of controlling for a wave of application in our analysis, as these time trends could be correlated with other variables.
+
 
 ### Distribution of Submissions by State
 
@@ -128,6 +133,8 @@ data %>%
     x = "Count"
   )
 ```
+In this plot, we can see that California has the highest number of applications, followed by Texas and Florida. This distribution is important for understanding the geographic representation of our sample and its implications for the analysis.
+
 
 ### Geographic Distribution of Submissions Versus Population By State
 ```{r, echo=FALSE}
@@ -162,6 +169,10 @@ plot_usmap(data = cross_sectional, values = "num_sub") +
   labs(title = "Total Number of Applicantions Within State 2019-2021") +
   theme(legend.position = "right")
 ```
+The above two plots show the geographic distribution of applications and population size across states. The first plot shows the mean population size of each state from 2019 to 2021, while the second plot shows the total number of applications within each state during the same period.
+
+The takeaway from these plots is that the relative number of applications across states largely reflects the size of the population in each state. In particular, states in the West, Northeast, and Southeast—regions known for having larger populations—consistently show higher application counts, aligning with the overall demographic distribution across the United States.
+
 ------------------------------------------------------------------------
 
 This comes from the original file `data.qmd`.

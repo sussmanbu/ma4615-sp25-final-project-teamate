@@ -23,7 +23,7 @@ Code Reference:
 
 ## Loading data
 
-```{r echo=FALSE}
+```{r}
 rm(list = ls())
 # hide warnings
 options(warn = -1)
@@ -352,7 +352,7 @@ ggplot(coef_df_lpm, aes(x = term, y = estimate, color = sample, shape = sample))
                 position = position_dodge(width = 0.7),
                 width = 0.2) +
   labs(
-    title = "LPM (OLS) Coefficients for Key Resume Traits (95% CI)",
+    #title = "LPM (OLS) Coefficients for Key Resume Traits (95% CI)",
     x        = NULL,
     y        = "Coefficient Estimate",
     color    = "Sample",
@@ -443,7 +443,7 @@ ggplot(coef_both, aes(x = pretty_term, y = estimate, color = sample, shape = sam
                 position = position_dodge(width = 0.7),
                 width = 0.2) +
   labs(
-    title    = "LPM (OLS) Heterogenous Treatment Effect Estimates (95% CI)",
+    #title    = "LPM (OLS) Heterogenous Treatment Effect Estimates (95% CI)",
     x        = NULL,
     y        = "Estimated Interaction",
     color    = "Sample",
