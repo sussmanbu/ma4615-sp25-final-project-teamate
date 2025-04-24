@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -181,6 +215,29 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <section id="loading-data" class="level2">
 <h2 class="anchored" data-anchor-id="loading-data">Loading data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># hide warnings</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(ggplot2))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyverse))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(dplyr))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(stargazer))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(readxl))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(fixest))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(usmap))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(lfe))    </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(lmtest))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(sandwich)) </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(multiwayvcov))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(here))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(gtsummary))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(htmltools))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(broom))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(stringr))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"dataset/cleaned_data.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
@@ -220,23 +277,23 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="summary-statistics">Summary Statistics</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div id="hxohwlnumj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hxohwlnumj table {
+<div id="uxyzwqmeby" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uxyzwqmeby table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#hxohwlnumj thead, #hxohwlnumj tbody, #hxohwlnumj tfoot, #hxohwlnumj tr, #hxohwlnumj td, #hxohwlnumj th {
+#uxyzwqmeby thead, #uxyzwqmeby tbody, #uxyzwqmeby tfoot, #uxyzwqmeby tr, #uxyzwqmeby td, #uxyzwqmeby th {
   border-style: none;
 }
 
-#hxohwlnumj p {
+#uxyzwqmeby p {
   margin: 0;
   padding: 0;
 }
 
-#hxohwlnumj .gt_table {
+#uxyzwqmeby .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -262,12 +319,12 @@ ul.task-list li input[type="checkbox"] {
   border-left-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_caption {
+#uxyzwqmeby .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#hxohwlnumj .gt_title {
+#uxyzwqmeby .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -279,7 +336,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-width: 0;
 }
 
-#hxohwlnumj .gt_subtitle {
+#uxyzwqmeby .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -291,7 +348,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-width: 0;
 }
 
-#hxohwlnumj .gt_heading {
+#uxyzwqmeby .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -303,13 +360,13 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_bottom_border {
+#uxyzwqmeby .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_col_headings {
+#uxyzwqmeby .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -324,7 +381,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_col_heading {
+#uxyzwqmeby .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -344,7 +401,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#hxohwlnumj .gt_column_spanner_outer {
+#uxyzwqmeby .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -356,15 +413,15 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 4px;
 }
 
-#hxohwlnumj .gt_column_spanner_outer:first-child {
+#uxyzwqmeby .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#hxohwlnumj .gt_column_spanner_outer:last-child {
+#uxyzwqmeby .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#hxohwlnumj .gt_column_spanner {
+#uxyzwqmeby .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -376,11 +433,11 @@ ul.task-list li input[type="checkbox"] {
   width: 100%;
 }
 
-#hxohwlnumj .gt_spanner_row {
+#uxyzwqmeby .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#hxohwlnumj .gt_group_heading {
+#uxyzwqmeby .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -406,7 +463,7 @@ ul.task-list li input[type="checkbox"] {
   text-align: left;
 }
 
-#hxohwlnumj .gt_empty_group_heading {
+#uxyzwqmeby .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -421,15 +478,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 
-#hxohwlnumj .gt_from_md > :first-child {
+#uxyzwqmeby .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#hxohwlnumj .gt_from_md > :last-child {
+#uxyzwqmeby .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#hxohwlnumj .gt_row {
+#uxyzwqmeby .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -448,7 +505,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#hxohwlnumj .gt_stub {
+#uxyzwqmeby .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -461,7 +518,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#hxohwlnumj .gt_stub_row_group {
+#uxyzwqmeby .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -475,15 +532,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: top;
 }
 
-#hxohwlnumj .gt_row_group_first td {
+#uxyzwqmeby .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#hxohwlnumj .gt_row_group_first th {
+#uxyzwqmeby .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#hxohwlnumj .gt_summary_row {
+#uxyzwqmeby .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -493,16 +550,16 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#hxohwlnumj .gt_first_summary_row {
+#uxyzwqmeby .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_first_summary_row.thick {
+#uxyzwqmeby .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#hxohwlnumj .gt_last_summary_row {
+#uxyzwqmeby .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -512,7 +569,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_grand_summary_row {
+#uxyzwqmeby .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -522,7 +579,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#hxohwlnumj .gt_first_grand_summary_row {
+#uxyzwqmeby .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -532,7 +589,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_last_grand_summary_row_top {
+#uxyzwqmeby .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -542,11 +599,11 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_striped {
+#uxyzwqmeby .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#hxohwlnumj .gt_table_body {
+#uxyzwqmeby .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -555,7 +612,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_footnotes {
+#uxyzwqmeby .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -569,7 +626,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_footnote {
+#uxyzwqmeby .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -578,7 +635,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#hxohwlnumj .gt_sourcenotes {
+#uxyzwqmeby .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -592,7 +649,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#hxohwlnumj .gt_sourcenote {
+#uxyzwqmeby .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -600,72 +657,72 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#hxohwlnumj .gt_left {
+#uxyzwqmeby .gt_left {
   text-align: left;
 }
 
-#hxohwlnumj .gt_center {
+#uxyzwqmeby .gt_center {
   text-align: center;
 }
 
-#hxohwlnumj .gt_right {
+#uxyzwqmeby .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#hxohwlnumj .gt_font_normal {
+#uxyzwqmeby .gt_font_normal {
   font-weight: normal;
 }
 
-#hxohwlnumj .gt_font_bold {
+#uxyzwqmeby .gt_font_bold {
   font-weight: bold;
 }
 
-#hxohwlnumj .gt_font_italic {
+#uxyzwqmeby .gt_font_italic {
   font-style: italic;
 }
 
-#hxohwlnumj .gt_super {
+#uxyzwqmeby .gt_super {
   font-size: 65%;
 }
 
-#hxohwlnumj .gt_footnote_marks {
+#uxyzwqmeby .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#hxohwlnumj .gt_asterisk {
+#uxyzwqmeby .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#hxohwlnumj .gt_indent_1 {
+#uxyzwqmeby .gt_indent_1 {
   text-indent: 5px;
 }
 
-#hxohwlnumj .gt_indent_2 {
+#uxyzwqmeby .gt_indent_2 {
   text-indent: 10px;
 }
 
-#hxohwlnumj .gt_indent_3 {
+#uxyzwqmeby .gt_indent_3 {
   text-indent: 15px;
 }
 
-#hxohwlnumj .gt_indent_4 {
+#uxyzwqmeby .gt_indent_4 {
   text-indent: 20px;
 }
 
-#hxohwlnumj .gt_indent_5 {
+#uxyzwqmeby .gt_indent_5 {
   text-indent: 25px;
 }
 
-#hxohwlnumj .katex-display {
+#uxyzwqmeby .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#hxohwlnumj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#uxyzwqmeby div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
