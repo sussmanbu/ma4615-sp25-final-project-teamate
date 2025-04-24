@@ -134,12 +134,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#explore-it-yourself" id="toc-explore-it-yourself" class="nav-link" data-scroll-target="#explore-it-yourself">Explore it yourself</a></li>
   </ul></li>
   <li><a href="#descriptive-evidence-by-applicants-first-name" id="toc-descriptive-evidence-by-applicants-first-name" class="nav-link" data-scroll-target="#descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</a></li>
-  <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
-  <li><a href="#rubric-other-components" id="toc-rubric-other-components" class="nav-link" data-scroll-target="#rubric-other-components">Rubric: Other components</a>
-  <ul class="collapse">
-  <li><a href="#video-recording" id="toc-video-recording" class="nav-link" data-scroll-target="#video-recording">Video Recording</a></li>
-  <li><a href="#rest-of-the-site" id="toc-rest-of-the-site" class="nav-link" data-scroll-target="#rest-of-the-site">Rest of the Site</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -307,56 +301,9 @@ shinyApp(ui = ui, server = server)</code></pre>
 <h2 class="anchored" data-anchor-id="descriptive-evidence-by-applicants-first-name">Descriptive Evidence by Applicants First Name</h2>
 <p><img src="output/plot_A4.png" class="img-fluid"></p>
 <p>This figure shows mean contact rates by applicant first name, organized by race group. The horizontal bars show race group mean contact rates. We can see that, on average, black names receive fewer 30-day callbacks than white names.</p>
-<p>To get the shinylive-r working.</p>
-<ol type="1">
-<li>Make sure your shiny app works as a regular r chunk.</li>
-<li>Make sure that the chunk is completely self-contained. Meaning all packages and data are loaded inside that chunk. It can’t rely on any other chunks.</li>
-<li>For the data that you are using for shiny, copy the rds file or any other files into the scripts folder, and then publish your website.</li>
-<li>Where you load in your data, change it to use a URL to the data set which will now be on your website. Something like read_rds(“https://sussmanbu.github.io/ma-4615-fa24-final-project-group-a/scripts/dataset_for_shiny.rds”)</li>
-<li>Check that the chunk still works as a regular r chunk.</li>
-<li>Change it to a shinylive-r chunk.</li>
-<li>Commit and publish your work.</li>
-</ol>
-<p>I recommend keeping the data used for the shiny interactive relatively small, though this isn’t completely necessary.</p>
 <hr>
-</section>
-<section id="rubric-on-this-page" class="level2">
-<h2 class="anchored" data-anchor-id="rubric-on-this-page">Rubric: On this page</h2>
-<ul>
-<li>Title
-<ul>
-<li>Your big picture page should have a creative/click-bait-y title/headline that provides a hint about your thesis.</li>
-</ul></li>
-<li>Clarity of Explanation
-<ul>
-<li>You should have a clear thesis/goal for this page. What are you trying to show? Make sure that you explain your analysis in detail but don’t go into top much mathematics or statistics. The audience for this page is the general public (to the extent possible). Your thesis should be a statement, not a question.</li>
-<li>Each figure should be very polished and also not too complicated. There should be a clear interpretation of the figure so the figure has a clear purpose. Even something like a histogram can be difficult to interpret for non-experts.</li>
-</ul></li>
-<li>Creativity
-<ul>
-<li>Do your best to make things interesting. Think of a how a news article or a magazine story might draw you in. Think of how each part of your analysis supports the previous part or provides a different perspective.</li>
-</ul></li>
-<li>Interactive component
-<ul>
-<li>Quality and ease of use of the interactive components. Is it clear what can be explored using your interactive components? Does it enhance and reinforce your conclusions?</li>
-</ul></li>
-<li>This page should be self-contained.</li>
-</ul>
-<p><strong>Note</strong>: This page should have no code visible, i.e.&nbsp;use <code>#| echo: FALSE</code>.</p>
-</section>
-<section id="rubric-other-components" class="level2">
-<h2 class="anchored" data-anchor-id="rubric-other-components">Rubric: Other components</h2>
-<section id="video-recording" class="level3">
-<h3 class="anchored" data-anchor-id="video-recording">Video Recording</h3>
-<p>Make a video recording (probably using Zoom) demonstrating your interactive components. You should provide a quick explanation of your data and demonstrate some of the conclusions from your EDA. This video should be no longer than 4 minutes. Include a link to your video (and password if needed) in your README.md file on your Github repository. You are not required to provide a link on the website. This can be presented by any subset of the team members.</p>
-</section>
-<section id="rest-of-the-site" class="level3">
-<h3 class="anchored" data-anchor-id="rest-of-the-site">Rest of the Site</h3>
-<p>Finally, here are important things to keep in mind for the rest of the site.</p>
-<p>The main title of your page is informative. Each post has an author/description/informative title. All lab required posts are present. Each page (including the home page) has a nice featured image associated with it. Your about page is up to date and clean. You have removed the generic posts from the initial site template.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
