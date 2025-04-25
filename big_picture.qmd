@@ -35,10 +35,10 @@ That’s the hidden bias we set out to uncover.
 
 ### Thesis
 
->Taste-based discrimination is an economic model of labor market discrimination which argues that employers' prejudice or dislikes in an organisational culture rooted in prohibited grounds can have negative results in hiring minority workers, meaning that they can be said to have a taste for discrimination. 
+>Background: Taste-based discrimination is an economic model of labor market discrimination which argues that employers' prejudice or dislikes in an organisational culture rooted in prohibited grounds can have negative results in hiring minority workers, meaning that they can be said to have a taste for discrimination. 
 
 [Taste-based Discrimination](https://en.wikipedia.org/wiki/Taste-based_discrimination) in initial resume screening manifests in callback rates that vary systematically by race and gender of first names.
-By analyzing hundreds of thousands of fictitious job applications in a randomized experiment, we can both verify and quantify these disparities.
+By analyzing fictitious job applications in a randomized correspondence experiment, we can both verify and quantify these disparities.
 
 ### Why this matters
 
